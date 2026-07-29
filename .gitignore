@@ -1,0 +1,12 @@
+# 이미지 파일 제외
+*.png
+*.jpg
+*.jpeg
+# 로고 SVG도 제외 (나중에 버전 관리하려면 아래 줄을 지우세요)
+*.svg
+
+# macOS
+.DS_Store
+
+# Claude Code 로컬 설정
+.claude/

@@ -3,19 +3,22 @@
 **Time-Net Korea 2026** 행사 홈페이지의 일부 섹션을 별도 HTML로 작성해 두는 저장소입니다.
 
 행사 홈페이지는 Google Sites로 운영되고 있으나, 프로그램 표처럼 레이아웃이 복잡하거나 자주 수정되는 부분은
-Google Sites 편집기로 다루기 번거롭습니다. 그래서 해당 부분만 독립된 HTML로 작성해 두고,
-필요할 때 홈페이지에 반영하는 방식으로 관리합니다.
+Google Sites 편집기로 다루기 번거롭습니다. 그래서 해당 부분만 독립된 HTML로 작성하고,
+GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방식으로 관리합니다.
 
 - 행사 홈페이지: https://sites.google.com/view/time-net-korea
+- 홈페이지의 프로그램 부분에서 링크하고 있는 주소:
+  https://hms1005.github.io/timenet-korea/timenet_program.html
 
-현재 홈페이지에 실제로 반영해 사용하고 있는 것은 **프로그램 부분뿐**이며,
-GitHub Pages 주소를 직접 링크해서 쓰고 있지는 않습니다.
+즉 GitHub Pages를 활용하되, 홈페이지에서 실제로 링크하고 있는 것은 위의 프로그램 페이지 하나뿐입니다.
+저장소 최상위 주소(https://hms1005.github.io/timenet-korea/)는 사용하지 않습니다.
+`index.html`을 두지 않았으므로 이 주소는 열리지 않습니다.
 
 ## 파일 구성
 
 | 파일 | 내용 | 사용 여부 |
 |---|---|---|
-| `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 15.) | 홈페이지에 반영해 사용 중 |
+| `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 15.) | 홈페이지에서 링크해 사용 중 |
 | `timenet_background_toggle.html` | 추진배경 및 목표 (국문/영문 토글) | 미사용 — 아래 참고 |
 
 `timenet_background_toggle.html`은 현재 행사 홈페이지에서 사용하지 않습니다.
@@ -33,8 +36,8 @@ GitHub Pages 주소를 직접 링크해서 쓰고 있지는 않습니다.
    git commit -m "변경 내용 설명"
    git push
    ```
-3. 프로그램이 바뀐 경우에는 행사 홈페이지 쪽에도 별도로 반영해야 합니다.
-   저장소는 원본 보관용이므로, 푸시만으로 홈페이지가 자동으로 갱신되지는 않습니다.
+3. GitHub Pages가 자동으로 다시 게시합니다 (보통 1분 내외).
+   행사 홈페이지에는 주소만 링크되어 있으므로, Google Sites 쪽은 손댈 필요가 없습니다.
 
 ## 참고
 

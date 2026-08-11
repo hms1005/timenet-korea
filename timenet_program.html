@@ -65,11 +65,17 @@
     background:var(--cyan-soft); border-radius:4px;
     padding:2px 8px; margin-right:8px; white-space:nowrap;
   }
+  .field-en{
+    display:inline-block; font-size:11px; font-weight:700; color:var(--cyan);
+    border:1px solid #BCDCE8; border-radius:3px; letter-spacing:0.6px;
+    padding:0 6px; margin-right:7px; white-space:nowrap;
+  }
   .foot{margin:10px 0 6px; font-size:13px; color:var(--ink-sub); padding:0 4px;}
   @media (max-width:640px){
     col.time{width:86px;} col.speaker{width:120px;}
     td,th{padding:9px 8px; font-size:13.5px;}
     .t-en{font-size:12px;}
+    .field-en{font-size:10px; padding:0 4px; margin-right:5px; letter-spacing:0.3px;}
     .program-head h2{font-size:19px;}
   }
 </style>
@@ -88,119 +94,135 @@
     </thead>
     <tbody>
       <tr>
-        <td class="time">10:00–10:20</td>
-        <td><span class="t-ko">개회</span><span class="t-en">Opening</span></td>
+        <td class="time">09:00–10:00</td>
+        <td><span class="t-ko">등록</span>
+            <span class="t-en">Registration &amp; Welcome</span></td>
         <td class="speaker tbd">TBD</td>
       </tr>
-
+      <!--
       <tr class="session"><td colspan="3">
         <span class="s-ko">기조 발표</span>
         <span class="s-en">PLENARY TALKS</span>
       </td></tr>
+    -->
       <tr>
-        <td class="time">10:20–10:50</td>
+        <td class="time">10:00–10:30</td>
         <td>
-          <span class="t-ko"><span class="plenary-tag">Plenary 1</span>[TBD] 공공재로서의 대한민국 표준시</span>
-          <span class="t-en"> [TBD] Korea Standard Time as a public utiliy in Korea</span>
+          <span class="t-ko"><span class="field">총론/개요</span>공공재로서의 대한민국 표준시</span>
+          <span class="t-en"><span class="field-en">OVERVIEW / INTRODUCTION</span>[TBD] Korea Standard Time as a public utility in Korea</span>
         </td>
         <td class="speaker">허명선 (KRISS)</td>
       </tr>
       <tr>
-        <td class="time">10:50–11:20</td>
+        <td class="time">10:30–11:00</td>
         <td>
-          <span class="t-ko"><span class="plenary-tag">Plenary 2</span>[TBD] 국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망</span>
-          <span class="t-en">[TBD] Prospects for Time Synchronization Services over the National Research Network</span>
+          <span class="t-ko"><span class="field">총론/네트워크</span>[TBD] 국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망</span>
+          <span class="t-en"><span class="field-en">OVERVIEW / NETWORK</span>[TBD] Prospects for Time Synchronization Services over the National Research Network</span>
         </td>
         <td class="speaker">조부승 (KISTI)</td>
       </tr>
       <tr>
-        <td class="time">11:20–11:50</td>
+        <td class="time">11:00-11:30</td>
         <td>
-          <span class="t-ko"><span class="plenary-tag">Plenary 3</span>[TBD]시각 비동기화와 국가 안보</span>
-          <span class="t-en">[TBD] Time Desynchronization and National Security</span>
+          <span class="t-ko"><span class="field">총론/정책</span>AI-자동화 시대의 시간 비동기화 이슈와 국가안보</span>
+          <span class="t-en"><span class="field-en">OVERVIEW / POLICY</span>Time Desynchronization and National Security in the era of AI and automation </span>
         </td>
-        <td class="speaker">윤정현 (국가안보전략연구원)</td>
+        <td class="speaker">윤정현/오일석(국가안보전략연구원)</td>
       </tr>
-      <tr class="break">
-        <td class="time">11:50–12:00</td>
+<!--       <tr class="break">
+        <td class="time">11:20–11:30</td>
         <td><span class="t-ko">단체사진 및 안내</span><span class="t-en">Group Photo &amp; Announcements</span></td>
         <td></td>
-      </tr>
+      </tr> -->
       <tr class="break">
-        <td class="time">12:00–13:30</td>
+        <td class="time">11:30–13:00</td>
         <td><span class="t-ko">오찬</span><span class="t-en">Lunch</span></td>
         <td></td>
       </tr>
 
+      <tr>
+        <td class="time">13:00-13:30</td>
+        <td>
+          <span class="t-ko"><span class="field">총론/산업</span>불확실성의 시대, 강인한 시각 정보 확보의 중요성</span>
+          <span class="t-en"><span class="field-en">OVERVIEW / INDUSTRY</span>Importance of Resilient Timing in an Insecure World</span>
+        </td>
+        <td class="speaker">Neil Pitman (Adtran/Oscilloquartz)</td>
+      </tr>
+      <!--
       <tr class="session"><td colspan="3">
         <span class="s-ko">국가 기반시설과 시각동기</span>
         <span class="s-en">TIMING AND THE NATIONAL INFRASTRUCTURES</span>
       </td></tr>
+    -->
+      <!--
       <tr>
-        <td class="time">13:30–15:30</td>
+        <td class="time"></td>
         <td>
-          <span class="t-ko"><span class="field">통신</span>[TBD] 이동통신망에서의 시각동기의 중요성</span>
-          <span class="t-en">[TBD] Timing for Mobile Networks</span>
+          <span class="t-ko"><span class="field">기반시설/통신</span>[TBD] 이동통신망에서의 시각동기의 중요성</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / TELECOM</span>[TBD] Timing for Mobile Networks</span>
         </td>
         <td class="speaker tbd">TBD (통신사)</td>
       </tr>
       <tr>
         <td class="time"></td>
         <td>
-          <span class="t-ko"><span class="field">금융</span>[TBD] 금융 거래에서의 시각동기</span>
-          <span class="t-en">[TBD]Timing for Financial Transaction</span>
+          <span class="t-ko"><span class="field">기반시설/금융</span>[TBD] 금융 거래에서의 시각동기</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / FINANCE</span>[TBD] Timing for Financial Transaction</span>
         </td>
         <td class="speaker tbd">TBD (거래소/금융결제 기관)</td>
       </tr>
+    -->
       <tr>
-        <td class="time"></td>
+        <td class="time">13:30-14:00</td>
         <td>
-          <span class="t-ko"><span class="field">전력</span>대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기</span>
-          <span class="t-en">Linking the Power Grid to KST: Overcoming GPS Vulnerabilities through Network-Based Time Synchronization </span>
+          <span class="t-ko"><span class="field">기반시설/전력</span>대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / POWER GRID</span>Linking the Power Grid to KST: Overcoming GPS Vulnerabilities through Network-Based Time Synchronization </span>
         </td>
         <td class="speaker">김충효 (한국전력공사)</td>
       </tr>
-      <!-- 발표자 미섭외로 임시 제외 (섭외 확정 시 주석 해제) -->
+      <!-- 발표자 미섭외로 임시 제외 (섭외 확정 시 주석 해제) 
       <tr>
         <td class="time"></td>
         <td>
-          <span class="t-ko"><span class="field">국방</span>[TBD] 우주/항공 분야에서의 시각동기</span>
-          <span class="t-en">[TBD]Timing for Space and Aeronautics</span>
+          <span class="t-ko"><span class="field">기반시설/항공우주</span>[TBD] 우주/항공 분야에서의 시각동기</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / AEROSPACE</span>[TBD] Timing for Space and Aeronautics</span>
         </td>
-        <td class="speaker tbd">(KARI)</td>
+        <td class="speaker tbd">TBD (KARI)</td>
       </tr>
+      <tr>
+        <td class="time"></td>
+        <td>
+          <span class="t-ko"><span class="field">기반시설/데이터센터</span>[TBD] 데이터 센터에서의 시각동기</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / DATA CENTER</span>[TBD] Timing for Data Centers</span>
+        </td>
+        <td class="speaker tbd">TBD</td>
+      </tr>
+      -->
    
       <tr>
-        <td class="time"></td>
+        <td class="time">14:00-14:30</td>
         <td>
-          <span class="t-ko"><span class="field">항법</span>[TBD] 지상파 항법에서의 시각동기</span>
-          <span class="t-en">[TBD] Timing in Terrestrial Radio Navigation</span>
+          <span class="t-ko"><span class="field">기반시설/항법</span>지상파 항법에서의 시각동기</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / NAVIGATION</span>Timing in Terrestrial Radio Navigation</span>
         </td>
-        <td class="speaker tbd">(KRISO)</td>
+        <td class="speaker">서기열 (KRISO)</td>
       </tr>
+
       <tr>
-        <td class="time"></td>
+        <td class="time">14:30-15:00</td>
         <td>
-          <span class="t-ko"><span class="field">IT</span>[TBD] 데이터 센터에서의 시각동기</span>
-          <span class="t-en">[TBD]Timing for Data Centers</span>
+          <span class="t-ko"><span class="field">기반시설/천문</span>VLBI에서의 정밀시각주파수, KVN에서의 활용</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / ASTRONOMY</span>Precision Time and Frequency in Very Long Baseline Interferometry: Applications in the Korean VLBI Network</span>
         </td>
-        <td class="speaker tbd">TBD</td>
-      </tr>
-      <tr>
-        <td class="time"></td>
-        <td>
-          <span class="t-ko"><span class="field">과학</span>[TBD] 전파천문학과 시각동기</span>
-          <span class="t-en">[TBD] Timing for Radio Astronomy</span>
-        </td>
-        <td class="speaker tbd">정태현(KASI)</td>
+        <td class="speaker">정태현 (KASI)</td>
       </tr> 
       <tr> 
-        <td class="time"></td>
+        <td class="time">15:00-15:30</td>
         <td>
-          <span class="t-ko"><span class="field">과학</span>[TBD] 양자기술에서의 시각동기</span>
-          <span class="t-en">[TBD]Timing in Quantum Science</span>
+          <span class="t-ko"><span class="field">기반시설/양자</span>양자 암호 통신의 시각 동기화</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / QUANTUM</span>Time Synchronization in Quantum Cryptography Communication</span>
         </td>
-        <td class="speaker tbd">TBD</td>
+        <td class="speaker">염다현 (IDQ)</td>
       </tr>
       <tr class="break">
         <td class="time">15:30–16:00</td>
@@ -210,57 +232,51 @@
       <tr>
         <td class="time">16:00–16:30</td>
         <td>
-          <span class="t-ko"><span class="plenary-tag">Plenary 4</span>FOREST 또는 SENSEI 프로젝트</span>
-          <span class="t-en">The FOREST or SENSEI Project</span>
+          <span class="t-ko"><span class="plenary-tag">online</span> <span class="field">기반시설/네트워크</span>유럽의 광섬유 시각주파수 전송망</span>
+          <span class="t-en"><span class="field-en">INFRASTRUCTURE / NETWORK</span>The European Fiber Network</span>
         </td>
-        <td class="speaker tbd">TBD</td>
+        <td class="speaker">Cecilia Clivati(INRiM)</td>
       </tr>
-      <tr class="session"><td colspan="3">
+<!--       <tr class="session"><td colspan="3">
         <span class="s-ko">상용 응용</span>
         <span class="s-en">COMMERCIAL SOLUTIONS for TIMING</span>
-      </td></tr>
+      </td></tr> -->
       <tr>
-        <td class="time">16:30–17:45</td>
+        <td class="time">16:30-17:00</td>
         <td>
-          <span class="t-ko">[TBD] 상용 원자시계 및 타이밍 솔루션1</span>
-          <span class="t-en">[TBD] Clock and Timing Solutions</span>
+          <span class="t-ko"><span class="field">솔루션/원자시계</span>상용 원자시계 및 타이밍 솔루션</span>
+          <span class="t-en"><span class="field-en">SOLUTIONS / CLOCKS</span>Clocks and Timing Solutions</span>
         </td>
-        <td class="speaker tbd">Neil Pitman (Adtran/Oscilloquartz)</td>
+        <td class="speaker">이인섭(Microchip)</td>
       </tr>
+      <!--
       <tr>
         <td class="time"></td>
         <td>
-          <span class="t-ko">[TBD] 상용 원자시계 및 타이밍 솔루션2</span>
-          <span class="t-en">[TBD] Clock and Timing Solutions</span>
-        </td>
-        <td class="speaker tbd">TBD (Microchip)</td>
-      </tr>
-      <tr>
-        <td class="time"></td>
-        <td>
-          <span class="t-ko">[TBD] 네트워크와 타이밍 솔루션</span>
-          <span class="t-en">[TBD] Timing Solutions for Networks</span>
+          <span class="t-ko"><span class="field">솔루션/네트워크</span>[TBD] 네트워크와 타이밍 솔루션</span>
+          <span class="t-en"><span class="field-en">SOLUTIONS / NETWORK</span>[TBD] Timing Solutions for Networks</span>
         </td>
         <td class="speaker tbd">TBD(Cisco)</td>
       </tr>
+    -->
       <tr>
-        <td class="time"></td>
+        <td class="time">17:00-17:30</td>
         <td>
-          <span class="t-ko">[TBD] 양자 통신에서의 타이밍 솔루션</span>
-          <span class="t-en">[TBD] Timing Solutions in Quantum Information</span>
+          <span class="t-ko"><span class="field">솔루션/양자</span>양자 통신에서의 타이밍 솔루션</span>
+          <span class="t-en"><span class="field-en">SOLUTIONS / QUANTUM</span>Timing Solutions in Quantum Information</span>
         </td>
-        <td class="speaker tbd">TBD(이투비비)</td>
+        <td class="speaker">이정호(이투비비)</td>
       </tr>
       <tr>
-        <td class="time"></td>
+        <td class="time">17:30-18:00</td>
         <td>
-          <span class="t-ko">[TBD] 아시아에서의 시각 서비스</span>
-          <span class="t-en">[TBD] Time as a Service in Asia</span>
+          <span class="t-ko"><span class="field">솔루션/서비스</span>아시아에서의 시각 서비스</span>
+          <span class="t-en"><span class="field-en">SOLUTIONS / SERVICE</span>Time as a Service in Asia</span>
         </td>
-        <td class="speaker tbd">TBD (KTsat)</td>
+        <td class="speaker">염병국(KTsat)</td>
       </tr>
       <tr>
-        <td class="time">17:45–18:00</td>
+        <td class="time">18:00–18:20</td>
         <td><span class="t-ko">폐회</span><span class="t-en">Closing</span></td>
         <td class="speaker">추진 실무그룹</td>
       </tr>

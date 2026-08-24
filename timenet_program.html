@@ -32,7 +32,7 @@
     color:var(--ink-sub); padding:12px 12px 8px; border-bottom:1.5px solid var(--line);
   }
   td{padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5;}
-  tbody tr:nth-child(even):not(.session):not(.break) td{background:var(--row-alt);}
+  tbody tr:nth-child(even):not(.session):not(.break):not(.ceremony) td{background:var(--row-alt);}
   .time{font-weight:700; color:var(--navy); white-space:nowrap; font-variant-numeric:tabular-nums;}
   .speaker{color:var(--ink-sub);}
   .tbd{color:#9AA9BE; font-style:italic;}
@@ -55,6 +55,30 @@
   /* break rows */
   .break td{background:var(--cyan-soft); color:var(--cyan); font-weight:600;}
   .break .t-en{color:var(--cyan); opacity:0.75;}
+  /* ceremony rows (opening / closing) */
+  .ceremony td{
+    background:var(--amber-soft);
+    border-bottom:1px solid #EEDCB4;
+    padding-top:14px; padding-bottom:14px;
+  }
+  .ceremony td:first-child{
+    border-left:4px solid var(--amber); padding-left:8px;
+  }
+  .ceremony .time{color:#9A6408;}
+  .ceremony .t-ko{
+    font-size:17px; font-weight:900; color:var(--navy); letter-spacing:0.3px;
+  }
+  .ceremony .t-en{
+    font-size:12px; font-weight:700; color:var(--amber);
+    letter-spacing:1.4px; text-transform:uppercase; margin-top:3px;
+  }
+  .ceremony .speaker{color:var(--ink); font-weight:600;}
+  .cer-tag{
+    display:inline-block; font-size:12px; font-weight:700;
+    color:#FFFFFF; background:var(--amber); border-radius:4px;
+    padding:2px 9px; margin-right:9px; vertical-align:2px;
+    letter-spacing:0.5px; white-space:nowrap;
+  }
   .plenary-tag{
     display:inline-block; font-size:12px; font-weight:700; color:var(--amber);
     border:1.2px solid var(--amber); border-radius:4px;
@@ -77,6 +101,11 @@
     .t-en{font-size:12px;}
     .field-en{font-size:10px; padding:0 4px; margin-right:5px; letter-spacing:0.3px;}
     .program-head h2{font-size:19px;}
+    .ceremony .t-ko{font-size:15px;}
+    .ceremony .t-en{font-size:11px; letter-spacing:1px;}
+    .cer-tag{font-size:11px; padding:1px 6px; margin-right:6px;}
+    .ceremony td{padding-top:11px; padding-bottom:11px;}
+    .ceremony td:first-child{padding-left:4px;}
   }
 </style>
 </head>
@@ -99,12 +128,20 @@
             <span class="t-en">Registration &amp; Welcome</span></td>
         <td class="speaker tbd">TBD</td>
       </tr>
+      <tr class="ceremony">
+        <td class="time">10:00–10:10</td>
+        <td>
+          <span class="t-ko"><span class="cer-tag">개회</span>개회사</span>
+          <span class="t-en">Opening Remarks</span>
+        </td>
+        <td class="speaker">TBD</td>
+      </tr>
       <tr class="session"><td colspan="3">
         <span class="s-ko">총론</span>
         <span class="s-en">OVERVIEW</span>
       </td></tr>
       <tr>
-        <td class="time">10:00–11:30</td>
+        <td class="time">10:10–11:30</td>
         <td>
           <span class="t-ko"><span class="field">총론/개요</span>공공재로서의 대한민국 표준시</span>
           <span class="t-en"><span class="field-en">OVERVIEW / INTRODUCTION</span>[TBD] Korea Standard Time as a public utility in Korea</span>
@@ -271,9 +308,12 @@
         </td>
         <td class="speaker">염병국(KTsat)</td>
       </tr>
-      <tr>
+      <tr class="ceremony">
         <td class="time"></td>
-        <td><span class="t-ko">폐회</span><span class="t-en">Closing</span></td>
+        <td>
+          <span class="t-ko">폐회</span>
+          <span class="t-en">Closing</span>
+        </td>
         <td class="speaker">추진 실무그룹</td>
       </tr>
     </tbody>

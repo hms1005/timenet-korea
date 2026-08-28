@@ -6,3 +6,7 @@ Gemini_Generated_Image_youm60youm60youm.png
 
 # Claude Code 로컬 설정
 .claude/
+
+# 내부 문서 (통장 사본·계약서·회의 자료 등, 공개 저장소이므로 제외)
+대관업무/
+준비회의/

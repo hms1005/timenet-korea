@@ -26,7 +26,7 @@
   .program-head .date{font-size:15px; color:var(--ink-sub); font-weight:500;}
   table{width:100%; border-collapse:collapse; font-size:15px;}
   col.time{width:132px;}
-  col.speaker{width:225px;}
+  col.speaker{width:320px;}
   th{
     text-align:left; font-size:13px; font-weight:700; letter-spacing:1px;
     color:var(--ink-sub); padding:12px 12px 8px; border-bottom:1.5px solid var(--line);
@@ -35,6 +35,12 @@
   tbody tr:nth-child(even):not(.session):not(.break):not(.ceremony) td{background:var(--row-alt);}
   .time{font-weight:700; color:var(--navy); white-space:nowrap; font-variant-numeric:tabular-nums;}
   .speaker{color:var(--ink-sub);}
+  .spk-line{display:block; white-space:nowrap;}
+  .spk-line + .spk-line{margin-top:3px;}
+  .spk-name{
+    display:inline-flex; justify-content:space-between;
+    width:3em; margin-right:0.5em; vertical-align:baseline;
+  }
   .tbd{color:#9AA9BE; font-style:italic;}
   .t-ko{display:block;}
   .t-en{display:block; font-size:13px; color:var(--ink-sub); margin-top:2px;}
@@ -97,6 +103,7 @@
   .foot{margin:10px 0 6px; font-size:13px; color:var(--ink-sub); padding:0 4px;}
   @media (max-width:640px){
     col.time{width:86px;} col.speaker{width:120px;}
+    .spk-line{white-space:normal;}
     td,th{padding:9px 8px; font-size:13.5px;}
     .t-en{font-size:12px;}
     .field-en{font-size:10px; padding:0 4px; margin-right:5px; letter-spacing:0.3px;}
@@ -129,19 +136,22 @@
         <td class="speaker tbd">TBD</td>
       </tr>
       <tr class="ceremony">
-        <td class="time">10:00–10:10</td>
+        <td class="time">10:00–10:15</td>
         <td>
           <span class="t-ko"><span class="cer-tag">개회</span>개회사</span>
           <span class="t-en">Opening Remarks</span>
         </td>
-        <td class="speaker">이호성 원장(한국표준과학연구원), 이식 원장(한국과학기술정보연구원)</td>
+        <td class="speaker">
+          <span class="spk-line"><span class="spk-name"><span>이</span><span>호</span><span>성</span></span>원장(한국표준과학연구원)</span>
+          <span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장(한국과학기술정보연구원)</span>
+        </td>
       </tr>
       <tr class="session"><td colspan="3">
         <span class="s-ko">총론</span>
         <span class="s-en">OVERVIEW</span>
       </td></tr>
       <tr>
-        <td class="time">10:10–11:30</td>
+        <td class="time">10:15–10:30</td>
         <td>
           <span class="t-ko"><span class="field">총론/개요</span>공공재로서의 대한민국 표준시</span>
           <span class="t-en"><span class="field-en">OVERVIEW / INTRODUCTION</span>[TBD] Korea Standard Time as a public utility in Korea</span>
@@ -149,7 +159,7 @@
         <td class="speaker">허명선 (KRISS)</td>
       </tr>
       <tr>
-        <td class="time"></td>
+        <td class="time">10:30–11:00</td>
         <td>
           <span class="t-ko"><span class="field">총론/네트워크</span>국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망</span>
           <span class="t-en"><span class="field-en">OVERVIEW / NETWORK</span>Prospects for Time Synchronization Services over the National Research Network</span>
@@ -157,7 +167,7 @@
         <td class="speaker">조부승 (KISTI)</td>
       </tr>
       <tr>
-        <td class="time"></td>
+        <td class="time">11:00–11:30</td>
         <td>
           <span class="t-ko"><span class="field">총론/정책</span>AI-자동화 시대의 시간 비동기화 이슈와 국가안보</span>
           <span class="t-en"><span class="field-en">OVERVIEW / POLICY</span>Time Desynchronization and National Security in the era of AI and automation </span>
@@ -170,7 +180,7 @@
         <td></td>
       </tr> -->
       <tr class="break">
-        <td class="time"></td>
+        <td class="time">11:30–13:00</td>
         <td><span class="t-ko">오찬</span><span class="t-en">Lunch</span></td>
         <td></td>
       </tr>
@@ -180,7 +190,7 @@
         <span class="s-en">TIMING AND THE NATIONAL INFRASTRUCTURES</span>
       </td></tr>
       <tr>
-        <td class="time">13:00-16:00</td>
+        <td class="time">13:00–13:30</td>
         <td>
           <span class="t-ko"><span class="field">총론/산업</span>불확실성의 시대, 강인한 시각 정보 확보의 중요성</span>
           <span class="t-en"><span class="field-en">OVERVIEW / INDUSTRY</span>Importance of Resilient Timing in an Insecure World</span>
@@ -205,7 +215,7 @@
       </tr>
     -->
       <tr>
-        <td class="time"></td>
+        <td class="time">13:30–13:50</td>
         <td>
           <span class="t-ko"><span class="field">기반시설/전력</span>대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기</span>
           <span class="t-en"><span class="field-en">INFRASTRUCTURE / POWER GRID</span>Linking the Power Grid to KST: Overcoming GPS Vulnerabilities through Network-Based Time Synchronization </span>
@@ -232,7 +242,7 @@
       -->
    
       <tr>
-        <td class="time"></td>
+        <td class="time">13:50–14:10</td>
         <td>
           <span class="t-ko"><span class="field">기반시설/항법</span>지상파 항법에서의 시각동기</span>
           <span class="t-en"><span class="field-en">INFRASTRUCTURE / NAVIGATION</span>Timing in Terrestrial Radio Navigation</span>
@@ -241,7 +251,7 @@
       </tr>
 
       <tr>
-        <td class="time"></td>
+        <td class="time">14:10–14:30</td>
         <td>
           <span class="t-ko"><span class="field">기반시설/천문</span>VLBI에서의 정밀시각주파수, KVN에서의 활용</span>
           <span class="t-en"><span class="field-en">INFRASTRUCTURE / ASTRONOMY</span>Precision Time and Frequency in Very Long Baseline Interferometry: Applications in the Korean VLBI Network</span>
@@ -249,7 +259,7 @@
         <td class="speaker">정태현 (KASI)</td>
       </tr> 
       <tr> 
-        <td class="time"></td>
+        <td class="time">14:30–14:50</td>
         <td>
           <span class="t-ko"><span class="field">기반시설/양자</span>양자 암호 통신의 시각 동기화</span>
           <span class="t-en"><span class="field-en">INFRASTRUCTURE / QUANTUM</span>Time Synchronization in Quantum Cryptography Communication</span>
@@ -257,12 +267,12 @@
         <td class="speaker">염다현 (IDQ)</td>
       </tr>
       <tr class="break">
-        <td class="time"></td>
+        <td class="time">14:50–15:00</td>
         <td><span class="t-ko">휴식</span><span class="t-en">Coffee Break</span></td>
         <td></td>
       </tr>
       <tr>
-        <td class="time">16:00–16:30</td>
+        <td class="time">15:00–15:30</td>
         <td>
           <span class="t-ko"><span class="plenary-tag">online</span> <span class="field">기반시설/네트워크</span>유럽의 광섬유 시각주파수 전송망</span>
           <span class="t-en"><span class="field-en">INFRASTRUCTURE / NETWORK</span>The European Fiber Network</span>
@@ -274,25 +284,15 @@
         <span class="s-en">COMMERCIAL SOLUTIONS for TIMING</span>
       </td></tr>
       <tr>
-        <td class="time">16:30-18:00</td>
+        <td class="time">15:30–16:00</td>
         <td>
-          <span class="t-ko"><span class="field">솔루션/원자시계</span>상용 원자시계 및 타이밍 솔루션</span>
-          <span class="t-en"><span class="field-en">SOLUTIONS / CLOCKS</span>Clocks and Timing Solutions</span>
+          <span class="t-ko"><span class="field">총론/솔루션</span>상용 원자시계 및 타이밍 솔루션</span>
+          <span class="t-en"><span class="field-en">OVERVIEW / SOLUTIONS</span>Clocks and Timing Solutions</span>
         </td>
         <td class="speaker">이인섭(Microchip)</td>
       </tr>
-      <!--
       <tr>
-        <td class="time"></td>
-        <td>
-          <span class="t-ko"><span class="field">솔루션/네트워크</span>[TBD] 네트워크와 타이밍 솔루션</span>
-          <span class="t-en"><span class="field-en">SOLUTIONS / NETWORK</span>[TBD] Timing Solutions for Networks</span>
-        </td>
-        <td class="speaker tbd">TBD(Cisco)</td>
-      </tr>
-    -->
-      <tr>
-        <td class="time"></td>
+        <td class="time">16:00–16:20</td>
         <td>
           <span class="t-ko"><span class="field">솔루션/양자</span>양자 통신에서의 타이밍 솔루션</span>
           <span class="t-en"><span class="field-en">SOLUTIONS / QUANTUM</span>Timing Solutions in Quantum Information</span>
@@ -300,15 +300,15 @@
         <td class="speaker">이정호(이투비비)</td>
       </tr>
             <tr>
-        <td class="time"></td>
+        <td class="time">16:20–16:50</td>
         <td>
           <span class="t-ko"><span class="field">솔루션/통신</span> 타이밍 솔루션</span>
-          <span class="t-en"><span class="field-en">SOLUTIONS / QUANTUM</span>Timing Solutions in telecom</span>
+          <span class="t-en"><span class="field-en">SOLUTIONS / TELECOM</span>Timing Solutions in telecom</span>
         </td>
         <td class="speaker">김정대(Cisco)</td>
       </tr>
       <tr>
-        <td class="time"></td>
+        <td class="time">16:50–17:10</td>
         <td>
           <span class="t-ko"><span class="field">솔루션/서비스</span>아시아에서의 시각 서비스</span>
           <span class="t-en"><span class="field-en">SOLUTIONS / SERVICE</span>Time as a Service in Asia</span>
@@ -316,7 +316,7 @@
         <td class="speaker">염병국(KTsat)</td>
       </tr>
       <tr class="ceremony">
-        <td class="time"></td>
+        <td class="time">17:10–17:30</td>
         <td>
           <span class="t-ko">폐회</span>
           <span class="t-en">Closing</span>

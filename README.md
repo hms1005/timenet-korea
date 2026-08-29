@@ -53,14 +53,42 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 | 개요 | `INTRODUCTION` | | 천문 | `ASTRONOMY` |
 | 정책 | `POLICY` | | 양자 | `QUANTUM` |
 | 산업 | `INDUSTRY` | | 통신 | `TELECOM` |
-| 네트워크 | `NETWORK` | | 금융 | `FINANCE` |
-| 전력 | `POWER GRID` | | 항공우주 | `AEROSPACE` |
-| 항법 | `NAVIGATION` | | 데이터센터 | `DATA CENTER` |
-| 원자시계 | `CLOCKS` | | 서비스 | `SERVICE` |
+| 솔루션 | `SOLUTIONS` | | 금융 | `FINANCE` |
+| 네트워크 | `NETWORK` | | 항공우주 | `AEROSPACE` |
+| 전력 | `POWER GRID` | | 데이터센터 | `DATA CENTER` |
+| 항법 | `NAVIGATION` | | 서비스 | `SERVICE` |
+| 원자시계 | `CLOCKS` | | | |
+
+대분류와 소분류는 자유롭게 조합합니다. 예를 들어 상용 솔루션을 개별 제품이 아니라 전체 조망으로
+다루는 발표는 `솔루션/원자시계`가 아니라 `총론/솔루션`(`OVERVIEW / SOLUTIONS`)으로 답니다.
 
 표는 대분류에 맞춰 세션 배너(`<tr class="session">`)로 나뉩니다 — `총론 / OVERVIEW`,
 `국가 기반시설과 시각동기 / TIMING AND THE NATIONAL INFRASTRUCTURES`,
 `시각 솔루션 / COMMERCIAL SOLUTIONS for TIMING`.
+
+## 연사 이름 정렬
+
+연사 칸에 두 사람 이상이 들어가는 행에서는 이름 길이가 달라 소속이 들쭉날쭉해 보입니다.
+이름을 `.spk-name`으로 감싸고 글자를 낱자로 쪼개면, 두 글자든 세 글자든 같은 폭(`3em`) 안에서
+양끝 정렬되어 뒤따르는 직함·소속의 시작 위치가 맞습니다.
+
+```html
+<td class="speaker">
+  <span class="spk-line"><span class="spk-name"><span>이</span><span>호</span><span>성</span></span>원장(한국표준과학연구원)</span>
+  <span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장(한국과학기술정보연구원)</span>
+</td>
+```
+
+- `.spk-line`은 한 사람을 한 줄로 잡아 줍니다. 좁은 화면(640px 이하)에서는 줄바꿈을 허용합니다.
+- 낱자를 `<span>`으로 하나씩 감싸야 `justify-content:space-between`이 글자 사이를 벌립니다.
+- 이 정렬 때문에 연사 열이 넓어야 해서 `col.speaker`를 225px에서 320px로 넓혔습니다.
+- 한 사람만 들어가는 행은 지금처럼 `<td class="speaker">허명선 (KRISS)</td>`로 두면 됩니다.
+
+## 시간 표기
+
+시간 열은 발표마다 시작–종료 시각을 적습니다. 예전에는 세션 첫 행에만 시간대를 묶어 적고
+나머지는 비워 두었으나, 지금은 모든 행을 개별 시간으로 채워 두었습니다.
+붙임표는 en dash(`–`)로 통일합니다.
 
 ## 수정 및 반영 방법
 

@@ -2,7 +2,8 @@
 """Time-Net Korea 2026 배포 자산 빌드.
 
   timenet_program.html            -> timenet_program.pdf / .png
-  timenet_korea_poster_Hyun_dark.html -> ..._dark.pdf / .png / .gif
+  timenet_korea_poster_Hyun_dark.html  -> ..._dark.pdf / .png / .gif
+  timenet_korea_poster_Hyun_light.html -> ..._light.pdf / .png / .gif
 
 headless Chrome 으로 렌더링한다. 원본 HTML 은 건드리지 않고, 출력 전용
 CSS(여백·애니메이션 정지 등)를 입힌 사본을 임시 폴더에 만들어 캡처한다.
@@ -11,7 +12,9 @@ CSS(여백·애니메이션 정지 등)를 입힌 사본을 임시 폴더에 만
     python3 tools/build_assets.py auto       # 소스가 바뀐 것만 다시 렌더
     python3 tools/build_assets.py check      # 프로그램 <-> 포스터 대조만
     python3 tools/build_assets.py program    # 프로그램 pdf+png 만
-    python3 tools/build_assets.py poster     # 포스터 pdf+png+gif 만
+    python3 tools/build_assets.py poster     # 포스터(다크+라이트) pdf+png+gif
+    python3 tools/build_assets.py poster-dark   # 다크만
+    python3 tools/build_assets.py poster-light  # 라이트만
 
 Pillow 필요: python3 -m pip install pillow
 """
@@ -31,7 +34,16 @@ CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 BUILD  = os.path.join(tempfile.gettempdir(), 'timenet-build')
 
 PROGRAM = os.path.join(ROOT, 'timenet_program.html')
-POSTER  = os.path.join(ROOT, 'timenet_korea_poster_Hyun_dark.html')
+
+# 다크·라이트 두 벌을 같은 방식으로 뽑는다. page 는 포스터 바깥 여백에 깔리는 색으로,
+# 캡처가 1px 어긋나도 반대색 테두리가 비치지 않게 각 포스터의 바탕에 맞춘다.
+POSTERS = [
+    {'key': 'poster',       'name': 'timenet_korea_poster_Hyun_dark',  'page': '#05070d'},
+    {'key': 'poster_light', 'name': 'timenet_korea_poster_Hyun_light', 'page': '#F8F7F4'},
+]
+for _p in POSTERS:
+    _p['src'] = os.path.join(ROOT, _p['name'] + '.html')
+POSTER = POSTERS[0]['src']          # 대조(check) 기준은 다크 포스터
 
 PROGRAM_W = 1000          # 렌더 폭(px). 화면용 여백은 아래 CSS 로 넓힌다.
 POSTER_W  = 920           # .poster 고정 폭
@@ -122,12 +134,13 @@ PROGRAM_CSS = EXACT + """
   .program{max-width:none !important; margin:0 !important;}
 </style>""" % PROGRAM_W
 
-POSTER_CSS = EXACT + """
+def poster_css(page):
+    return EXACT + """
 <style>
-  html,body{background:#05070d !important;}
+  html,body{background:%s !important;}
   body{padding:0 !important; display:block !important;}         /* 포스터 가장자리에 딱 맞게 */
   .poster{margin:0 !important; box-shadow:none !important; border:none !important;}
-</style>"""
+</style>""" % page
 
 
 def dress(path, css, extra=''):
@@ -163,14 +176,14 @@ window.addEventListener('load', function(){
 </script>""" % (GIF_LOOP, t)
 
 
-def build_gif(w, h, dst):
+def build_gif(poster, w, h, dst):
     from PIL import Image
     frames_dir = os.path.join(BUILD, 'frames')
     shutil.rmtree(frames_dir, ignore_errors=True)
     os.makedirs(frames_dir)
 
     for i in range(GIF_N):
-        src = dress(POSTER, POSTER_CSS, gif_frame_css(GIF_LOOP * i / GIF_N))
+        src = dress(poster['src'], poster_css(poster['page']), gif_frame_css(GIF_LOOP * i / GIF_N))
         io.open(os.path.join(BUILD, 'fr%03d.html' % i), 'w', encoding='utf-8').write(src)
 
     def shot(i):
@@ -214,8 +227,12 @@ def rows(path, table_start, cell_re):
 
 def check():
     """시간·연사만 대조한다. 제목은 포스터가 줄여 쓰므로 비교하지 않는다."""
+    return all([check_one(p) for p in POSTERS])
+
+
+def check_one(poster):
     prog = rows(PROGRAM, '<tbody>', r'<td\b[^>]*>(.*?)</td>')
-    post = rows(POSTER, '<table class="prog">', r'<t[dh]\b[^>]*>(.*?)</t[dh]>')
+    post = rows(poster['src'], '<table class="prog">', r'<t[dh]\b[^>]*>(.*?)</t[dh]>')
 
     def keyed(rs):
         d = {}
@@ -237,12 +254,13 @@ def check():
             # 개회사 두 줄은 프로그램 쪽이 이름 정렬용 마크업이라 공백만 다르다
             if pa != pb:
                 problems.append('%s  프로그램 "%s"  <->  포스터 "%s"' % (t, a[t], b[t]))
+    label = poster['name'].replace('timenet_korea_poster_Hyun_', '')
     if problems:
-        print('연사/시간 불일치:')
+        print('연사/시간 불일치 (%s):' % label)
         for p in problems:
             print('  - ' + p)
     else:
-        print('연사/시간: 프로그램 <-> 포스터 일치 (%d행)' % len(a))
+        print('연사/시간: 프로그램 <-> 포스터(%s) 일치 (%d행)' % (label, len(a)))
     return not problems
 
 
@@ -259,19 +277,19 @@ def build_program():
     print('  timenet_program.pdf  1p %dx%dpx  %.1f KB' % (PROGRAM_W, used, os.path.getsize(pdf) / 1024))
 
 
-def build_poster():
-    src = dress(POSTER, POSTER_CSS, FREEZE)
+def build_poster(poster):
+    src = dress(poster['src'], poster_css(poster['page']), FREEZE)
     w, h = measure(src, POSTER_W + 40, selector='.poster')
-    png = os.path.join(ROOT, 'timenet_korea_poster_Hyun_dark.png')
-    pdf = os.path.join(ROOT, 'timenet_korea_poster_Hyun_dark.pdf')
-    gif = os.path.join(ROOT, 'timenet_korea_poster_Hyun_dark.gif')
+    base = os.path.join(ROOT, poster['name'])
+    png, pdf, gif = base + '.png', base + '.pdf', base + '.gif'
     screenshot(src, png, POSTER_W, h, scale=2)
     used = print_pdf(src, pdf, POSTER_W, h)
-    build_gif(POSTER_W, h, gif)
-    print('  ..._dark.png  %dx%d (2x)  %.1f KB' % (POSTER_W * 2, h * 2, os.path.getsize(png) / 1024))
-    print('  ..._dark.pdf  1p %dx%dpx  %.1f KB' % (POSTER_W, used, os.path.getsize(pdf) / 1024))
-    print('  ..._dark.gif  %dx%d %d프레임 %.0f초 루프  %.1f KB'
-          % (POSTER_W * GIF_SCALE, h * GIF_SCALE, GIF_N, GIF_LOOP, os.path.getsize(gif) / 1024))
+    build_gif(poster, POSTER_W, h, gif)
+    tag = poster['name'].replace('timenet_korea_poster_Hyun', '...')
+    print('  %s.png  %dx%d (2x)  %.1f KB' % (tag, POSTER_W * 2, h * 2, os.path.getsize(png) / 1024))
+    print('  %s.pdf  1p %dx%dpx  %.1f KB' % (tag, POSTER_W, used, os.path.getsize(pdf) / 1024))
+    print('  %s.gif  %dx%d %d프레임 %.0f초 루프  %.1f KB'
+          % (tag, POSTER_W * GIF_SCALE, h * GIF_SCALE, GIF_N, GIF_LOOP, os.path.getsize(gif) / 1024))
 
 
 STAMP = os.path.join(ROOT, 'tools', '.build-stamp')
@@ -290,7 +308,9 @@ def stale():
             if ' ' in line:
                 h, n = line.strip().split(' ', 1)
                 prev[n] = h
-    now = {'program': digest(PROGRAM), 'poster': digest(POSTER)}
+    now = {'program': digest(PROGRAM)}
+    for p in POSTERS:
+        now[p['key']] = digest(p['src'])
     return [k for k, v in now.items() if prev.get(k) != v], now
 
 
@@ -315,9 +335,11 @@ def main():
         if 'program' in todo:
             print('프로그램 렌더링...')
             build_program()
-        if 'poster' in todo:
-            print('포스터 렌더링... (GIF 30프레임, 1~2분)')
-            build_poster()
+        for p in POSTERS:
+            if p['key'] in todo:
+                print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
+                      % p['name'].replace('timenet_korea_poster_Hyun_', ''))
+                build_poster(p)
         write_stamp(now)
         return
 
@@ -328,10 +350,15 @@ def main():
     if what in ('all', 'program'):
         print('프로그램 렌더링...')
         build_program()
-    if what in ('all', 'poster'):
-        print('포스터 렌더링... (GIF 30프레임, 1~2분)')
-        build_poster()
-    if what in ('all', 'program', 'poster'):
+    if what in ('all', 'poster', 'poster-dark', 'poster-light'):
+        want = {'poster-dark': ['poster'], 'poster-light': ['poster_light']}.get(
+            what, [p['key'] for p in POSTERS])
+        for p in POSTERS:
+            if p['key'] in want:
+                print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
+                      % p['name'].replace('timenet_korea_poster_Hyun_', ''))
+                build_poster(p)
+    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light'):
         _, now = stale()
         write_stamp(now)
 

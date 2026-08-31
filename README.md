@@ -21,7 +21,7 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 | `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 29.) | 홈페이지에서 링크해 사용 중 |
 | `timenet_background_toggle.html` | 추진배경 및 목표 (국문/영문 토글) | 미사용 — 아래 참고 |
 | `timenet_korea_poster_Hyun_dark.html` | 행사 포스터 (다크) — 배포 자산의 원본 | 홍보용 PDF/PNG/GIF 로 출력 |
-| `timenet_korea_poster_Hyun_light.html` | 행사 포스터 (라이트) | 인쇄 대비용 예비 |
+| `timenet_korea_poster_Hyun_light.html` | 행사 포스터 (라이트) | 인쇄용 PDF/PNG/GIF 로 출력 |
 | `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |
 
 `timenet_background_toggle.html`은 현재 행사 홈페이지에서 사용하지 않습니다.
@@ -105,13 +105,16 @@ python3 tools/build_assets.py          # 대조 + 전체 렌더
 python3 tools/build_assets.py auto     # 내용이 바뀐 것만 다시 렌더 (평소 이걸 씁니다)
 python3 tools/build_assets.py check    # 프로그램 <-> 포스터 대조만
 python3 tools/build_assets.py program  # 프로그램 PDF+PNG 만
-python3 tools/build_assets.py poster   # 포스터 PDF+PNG+GIF 만
+python3 tools/build_assets.py poster   # 포스터 PDF+PNG+GIF (다크+라이트)
+python3 tools/build_assets.py poster-dark    # 다크만
+python3 tools/build_assets.py poster-light   # 라이트만
 ```
 
 | 원본 | 만들어지는 파일 |
 |---|---|
 | `timenet_program.html` | `timenet_program.pdf` (1페이지), `timenet_program.png` (2x) |
 | `timenet_korea_poster_Hyun_dark.html` | `..._dark.pdf` (1페이지), `..._dark.png` (2x), `..._dark.gif` (30프레임 6초 루프) |
+| `timenet_korea_poster_Hyun_light.html` | `..._light.pdf` / `.png` / `.gif` (다크와 같은 규격) |
 
 **HTML 원본은 건드리지 않습니다.** 출력 전용 CSS(여백 확보, 애니메이션 정지, 배경색 강제)를
 입힌 사본을 임시 폴더에 만들어 캡처하는 방식이라, 화면용 스타일과 문서용 스타일이 서로
@@ -129,8 +132,12 @@ python3 tools/build_assets.py poster   # 포스터 PDF+PNG+GIF 만
   (`gif_frame_css`)도 같이 확인하세요.
 - **포스터 렌더는 GIF 30프레임 때문에 1~2분 걸립니다.** 프로그램만 고쳤으면 `auto` 가
   프로그램만 다시 만들므로 몇 초면 끝납니다.
-- 라이트 포스터는 자산을 만들지 않습니다. 배포에 쓰는 건 다크 한 종류이고, 라이트는 인쇄가
-  필요해질 때를 대비한 예비본입니다. 필요해지면 `POSTER` 상수를 바꿔 한 번 돌리면 됩니다.
+- **포스터는 다크·라이트 두 벌을 같은 규격으로 만듭니다.** 스크립트의 `POSTERS` 목록에
+  정의돼 있고, `auto` 는 둘을 따로 추적해 바뀐 쪽만 다시 렌더합니다. 둘 다 바뀌면 GIF 를
+  두 번 굽느라 3~4분 걸립니다.
+- `page` 값은 포스터 바깥에 깔리는 색입니다. 캡처가 1px 어긋나도 반대색 테두리가 비치지
+  않도록 각 포스터의 바탕색에 맞춰 둡니다.
+- `check` 는 두 포스터를 모두 프로그램과 대조합니다.
 
 필요한 것: macOS 의 Google Chrome, 그리고 Pillow (`python3 -m pip install pillow`).
 

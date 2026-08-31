@@ -58,6 +58,14 @@
     display:block; font-size:13px; font-weight:600; color:#A9C3E4;
     letter-spacing:1.4px; margin-left:19px;
   }
+  .session td.chair{
+    text-align:left; font-weight:600; line-height:1.45;
+  }
+  .session .c-label{
+    display:block; font-size:11px; font-weight:700; color:#A9C3E4;
+    letter-spacing:1.2px; margin-bottom:2px;
+  }
+  .session .c-name{display:block; font-size:14px; color:#F4FAFF;}
   /* break rows */
   .break td{background:var(--cyan-soft); color:var(--cyan); font-weight:600;}
   .break .t-en{color:var(--cyan); opacity:0.75;}
@@ -113,6 +121,8 @@
     .cer-tag{font-size:11px; padding:1px 6px; margin-right:6px;}
     .ceremony td{padding-top:11px; padding-bottom:11px;}
     .ceremony td:first-child{padding-left:4px;}
+    .session .c-label{font-size:10px; letter-spacing:0.6px;}
+    .session .c-name{font-size:12.5px;}
   }
 </style>
 </head>
@@ -146,10 +156,16 @@
           <span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장(한국과학기술정보연구원)</span>
         </td>
       </tr>
-      <tr class="session"><td colspan="3">
-        <span class="s-ko">총론</span>
-        <span class="s-en">OVERVIEW</span>
-      </td></tr>
+      <tr class="session">
+        <td colspan="2">
+          <span class="s-ko">총론</span>
+          <span class="s-en">OVERVIEW</span>
+        </td>
+        <td class="chair">
+          <span class="c-label">좌장 CHAIR</span>
+          <span class="c-name">허명선 (KRISS)</span>
+        </td>
+      </tr>
       <tr>
         <td class="time">10:15–10:30</td>
         <td>
@@ -192,10 +208,16 @@
         <td><span class="t-ko">사진촬영 및 오찬</span><span class="t-en">Lunch</span></td>
         <td></td>
       </tr>
-      <tr class="session"><td colspan="3">
-        <span class="s-ko">국가 기반시설과 시각동기</span>
-        <span class="s-en">TIMING AND THE NATIONAL INFRASTRUCTURES</span>
-      </td></tr>
+      <tr class="session">
+        <td colspan="2">
+          <span class="s-ko">국가 기반시설과 시각동기</span>
+          <span class="s-en">TIMING AND THE NATIONAL INFRASTRUCTURES</span>
+        </td>
+        <td class="chair">
+          <span class="c-label">좌장 CHAIR</span>
+          <span class="c-name">조부승 (KISTI)</span>
+        </td>
+      </tr>
       <!--
       <tr>
         <td class="time"></td>
@@ -271,10 +293,16 @@
         <td><span class="t-ko">휴식</span><span class="t-en">Coffee Break</span></td>
         <td></td>
       </tr>
-      <tr class="session"><td colspan="3">
-        <span class="s-ko">시각 솔루션</span>
-        <span class="s-en">TIMING SOLUTIONS</span>
-      </td></tr>
+      <tr class="session">
+        <td colspan="2">
+          <span class="s-ko">시각 솔루션</span>
+          <span class="s-en">TIMING SOLUTIONS</span>
+        </td>
+        <td class="chair">
+          <span class="c-label">좌장 CHAIR</span>
+          <span class="c-name">유대혁 (KRISS)</span>
+        </td>
+      </tr>
       <tr>
         <td class="time">15:30–16:00</td>
         <td>

@@ -16,3 +16,8 @@ Gemini_Generated_Image_youm60youm60youm.png
 
 # Python 캐시
 __pycache__/
+
+# 기관 CI 원본 묶음 (작업용 원본이고 용량이 커서 저장소에는 두지 않음)
+한국표준과학연구원CI
+한국표준과학연구원CI/
+한국표준과학연구원CI.zip

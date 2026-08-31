@@ -20,6 +20,9 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 |---|---|---|
 | `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 29.) | 홈페이지에서 링크해 사용 중 |
 | `timenet_background_toggle.html` | 추진배경 및 목표 (국문/영문 토글) | 미사용 — 아래 참고 |
+| `timenet_korea_poster_Hyun_dark.html` | 행사 포스터 (다크) — 배포 자산의 원본 | 홍보용 PDF/PNG/GIF 로 출력 |
+| `timenet_korea_poster_Hyun_light.html` | 행사 포스터 (라이트) | 인쇄 대비용 예비 |
+| `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |
 
 `timenet_background_toggle.html`은 현재 행사 홈페이지에서 사용하지 않습니다.
 추후 추진배경·목표를 별도 페이지로 정리하거나 국·영문 병기가 필요해질 경우를 대비해
@@ -57,7 +60,8 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 | 네트워크 | `NETWORK` | | 항공우주 | `AEROSPACE` |
 | 전력 | `POWER GRID` | | 데이터센터 | `DATA CENTER` |
 | 항법 | `NAVIGATION` | | 서비스 | `SERVICE` |
-| 원자시계 | `CLOCKS` | | | |
+| 원자시계 | `CLOCKS` | | 광통신 | `FIBER` |
+| 위성 | `SATELLITE` | | | |
 
 대분류와 소분류는 자유롭게 조합합니다. 예를 들어 상용 솔루션을 개별 제품이 아니라 전체 조망으로
 다루는 발표는 `솔루션/원자시계`가 아니라 `총론/솔루션`(`OVERVIEW / SOLUTIONS`)으로 답니다.
@@ -90,16 +94,70 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 나머지는 비워 두었으나, 지금은 모든 행을 개별 시간으로 채워 두었습니다.
 붙임표는 en dash(`–`)로 통일합니다.
 
+## 배포 자산 자동 생성 (PDF · PNG · GIF)
+
+프로그램표와 포스터는 홈페이지 링크 말고도 공문·메일·SNS 에 붙일 파일 형태로 자주 필요합니다.
+매번 브라우저에서 손으로 인쇄하면 여백과 배율이 달라지므로, `tools/build_assets.py` 가
+headless Chrome 으로 렌더해 항상 같은 결과를 만듭니다.
+
+```bash
+python3 tools/build_assets.py          # 대조 + 전체 렌더
+python3 tools/build_assets.py auto     # 내용이 바뀐 것만 다시 렌더 (평소 이걸 씁니다)
+python3 tools/build_assets.py check    # 프로그램 <-> 포스터 대조만
+python3 tools/build_assets.py program  # 프로그램 PDF+PNG 만
+python3 tools/build_assets.py poster   # 포스터 PDF+PNG+GIF 만
+```
+
+| 원본 | 만들어지는 파일 |
+|---|---|
+| `timenet_program.html` | `timenet_program.pdf` (1페이지), `timenet_program.png` (2x) |
+| `timenet_korea_poster_Hyun_dark.html` | `..._dark.pdf` (1페이지), `..._dark.png` (2x), `..._dark.gif` (30프레임 6초 루프) |
+
+**HTML 원본은 건드리지 않습니다.** 출력 전용 CSS(여백 확보, 애니메이션 정지, 배경색 강제)를
+입힌 사본을 임시 폴더에 만들어 캡처하는 방식이라, 화면용 스타일과 문서용 스타일이 서로
+간섭하지 않습니다.
+
+몇 가지 알아 둘 점:
+
+- **`check` 는 시간과 연사만 대조합니다.** 포스터는 표가 좁아 제목을 줄여 쓰기 때문에
+  제목까지 비교하면 매번 걸립니다. 시간·연사가 어긋나면 그건 실수이므로 여기서 잡습니다.
+- **`auto` 는 `tools/.build-stamp` 의 해시로 변경을 판단합니다.** 이 파일도 함께 커밋해야
+  다음에 받아 쓸 때 헛돌지 않습니다.
+- **GIF 는 포스터 배경의 광섬유 애니메이션을 프레임 단위로 얼려 캡처합니다.** 원본은 주기가
+  제각각(빔 4.8~7.4초, 펄스 3.4초)이라 그대로 이어붙이면 루프 이음매가 튑니다. 렌더할 때만
+  각 주기를 6초의 약수로 스냅해 맞춥니다. 포스터의 애니메이션 주기를 바꾸면 이 부분
+  (`gif_frame_css`)도 같이 확인하세요.
+- **포스터 렌더는 GIF 30프레임 때문에 1~2분 걸립니다.** 프로그램만 고쳤으면 `auto` 가
+  프로그램만 다시 만들므로 몇 초면 끝납니다.
+- 라이트 포스터는 자산을 만들지 않습니다. 배포에 쓰는 건 다크 한 종류이고, 라이트는 인쇄가
+  필요해질 때를 대비한 예비본입니다. 필요해지면 `POSTER` 상수를 바꿔 한 번 돌리면 됩니다.
+
+필요한 것: macOS 의 Google Chrome, 그리고 Pillow (`python3 -m pip install pillow`).
+
+## 프로그램을 고치면 포스터도 같이 고칩니다
+
+프로그램표와 포스터는 같은 내용을 두 벌로 들고 있습니다. 한쪽만 고치면 곧바로 어긋나므로,
+`timenet_program.html` 의 시간·연사·제목을 손댔으면 다크·라이트 포스터의
+`<table class="prog">` 에서 같은 행을 찾아 함께 고친 뒤 `check` 로 확인합니다.
+
+포스터 표에는 분야 태그(`총론/정책` 등)와 영문 제목이 없습니다. 태그와 영문만 바뀐 수정이면
+포스터는 그대로 두어도 됩니다.
+
 ## 수정 및 반영 방법
 
 1. HTML 파일을 수정하고, 브라우저로 열어 결과를 확인합니다.
-2. 커밋 후 푸시해 이력을 남깁니다.
+   프로그램을 고쳤으면 포스터의 같은 행도 함께 고칩니다 (바로 위 항목 참고).
+2. 배포 자산을 다시 만듭니다. 바뀐 것만 골라 렌더합니다.
    ```bash
-   git add *.html
+   python3 tools/build_assets.py auto
+   ```
+3. 커밋 후 푸시해 이력을 남깁니다. 생성물과 `.build-stamp` 도 같이 커밋합니다.
+   ```bash
+   git add *.html *.pdf *.png *.gif tools/
    git commit -m "변경 내용 설명"
    git push
    ```
-3. GitHub Pages가 자동으로 다시 게시합니다 (보통 1분 내외).
+4. GitHub Pages가 자동으로 다시 게시합니다 (보통 1분 내외).
    행사 홈페이지에는 주소만 링크되어 있으므로, Google Sites 쪽은 손댈 필요가 없습니다.
 
 배포가 오래 걸릴 때가 있습니다. GitHub 러너가 밀리면 큐에서 10분 넘게 대기하기도 하는데,

@@ -10,3 +10,9 @@ Gemini_Generated_Image_youm60youm60youm.png
 # 내부 문서 (통장 사본·계약서·회의 자료 등, 공개 저장소이므로 제외)
 대관업무/
 준비회의/
+
+# Safari 등의 미완료 다운로드 폴더 (포스터 원안 pptx 등)
+*.download/
+
+# Python 캐시
+__pycache__/

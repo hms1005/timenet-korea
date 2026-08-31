@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Time-Net Korea 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#F3F4F7; --ink-soft:rgba(255,255,255,.66);
+    --paper:#0E1526; --line:rgba(255,255,255,.14); --row-alt:rgba(255,255,255,.04);
+    --orange:#FF8200; --red:#DA2128;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:#05070d;}
+  body{ display:flex; justify-content:center; padding:40px 12px; font-family:'Noto Sans KR',sans-serif; }
+  .poster{
+    position:relative; width:920px;
+    background:linear-gradient(150deg, #0B1220 0%, #16223C 55%, #241226 100%);
+    color:var(--ink); overflow:hidden;
+    box-shadow:0 40px 100px -20px rgba(0,0,0,.7);
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .glow{ position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+  .glow.a{ width:520px; height:520px; right:-180px; top:-200px; background:radial-gradient(circle, rgba(255,130,0,.22), transparent 70%); }
+  .glow.b{ width:480px; height:480px; left:-160px; bottom:-160px; background:radial-gradient(circle, rgba(218,33,40,.2), transparent 70%); }
+  .grid{
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 40px);
+    pointer-events:none;
+  }
+  .fiber-bg{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+  .fiber-bg .base{ fill:none; stroke:url(#fiberGrad); stroke-linecap:round; }
+  .fiber-bg .beam{
+    fill:none; stroke:url(#fiberGradBright); stroke-linecap:round; filter:url(#glow);
+    animation:fiberFlow linear infinite;
+  }
+  .fiber-bg .node{ filter:url(#glow); }
+  .fiber-bg .pulse{ transform-box:fill-box; transform-origin:center; filter:url(#glow); animation:fiberPulse 3.4s ease-in-out infinite; }
+  .fiber-bg .pulse.d2{ animation-delay:.5s; }
+  .fiber-bg .pulse.d3{ animation-delay:1s; }
+  .fiber-bg .pulse.d4{ animation-delay:1.6s; }
+  .fiber-bg .pulse.d5{ animation-delay:2.1s; }
+  @keyframes fiberPulse{ 0%,100%{ opacity:.28; transform:scale(.8);} 50%{ opacity:.95; transform:scale(1.3);} }
+  @keyframes fiberFlow{ to{ stroke-dashoffset:-120; } }
+  /* signature rail: KRISS orange -> KISTI red */
+  .spine{
+    position:absolute; left:0; top:0; bottom:0; width:34px;
+    background:linear-gradient(180deg, var(--orange) 0%, var(--orange) 44%, var(--red) 56%, var(--red) 100%);
+    box-shadow:2px 0 14px rgba(0,0,0,.12);
+  }
+  .spine::before{
+    content:""; position:absolute; inset:0;
+    background-image:repeating-linear-gradient(180deg, rgba(255,255,255,.6) 0 2px, transparent 2px 16px);
+  }
+  .spine-label{
+    position:absolute; left:8px; writing-mode:vertical-rl; text-orientation:mixed;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em;
+    color:rgba(255,255,255,.92);
+  }
+  .spine-label.top{ top:28px; }
+  .spine-label.bottom{ bottom:28px; }
+
+  .content{ position:relative; margin-left:34px; padding:34px 44px 28px 40px; }
+
+  .eyebrow-top{
+    text-align:center; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.28em;
+    color:var(--ink-soft); margin-bottom:12px; font-weight:600;
+  }
+  .eyebrow-top .dot{ color:var(--orange); margin:0 8px; }
+
+  .hero{ position:relative; text-align:center; margin-bottom:6px; }
+  .hero-logo-row{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:4px; }
+  .hero-icon{ height:78px; width:auto; flex:none; filter:drop-shadow(0 0 18px rgba(255,130,0,.35)); }
+  .wordmark-text{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:46px; line-height:1;
+    letter-spacing:-.01em; color:var(--ink); white-space:nowrap;
+  }
+  .wordmark-text .year-inline{
+    background:linear-gradient(120deg, var(--orange), var(--red));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .subtitle{ margin-top:9px; font-size:15px; font-weight:700; color:var(--red); letter-spacing:.01em; }
+  .accent-bar{ width:56px; height:3px; margin:13px auto 15px; border-radius:4px; background:linear-gradient(90deg, var(--orange), var(--red)); }
+
+  .hero-banner{
+    position:relative; margin:12px auto 2px; max-width:740px;
+  }
+  .hero-banner svg{ display:block; width:100%; height:auto; }
+  .hero-banner-caption{
+    padding:6px 20px 4px; text-align:center; font-family:'IBM Plex Mono',monospace;
+    font-size:10px; letter-spacing:.12em; color:var(--ink-soft);
+  }
+  .hero-banner-caption b{ color:#FF8200; font-weight:600; }
+
+  .pass-card{
+    display:inline-block; margin:0 auto; padding:11px 26px; border-radius:12px;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); box-shadow:0 10px 26px -12px rgba(0,0,0,.35);
+  }
+  .datevenue{ font-size:17px; font-weight:700; color:var(--ink); word-break:keep-all; }
+  .datevenue .sep{ color:var(--ink-soft); margin:0 10px; font-weight:400; }
+  .subvenue{ margin-top:6px; font-size:11.2px; color:var(--ink-soft); line-height:1.6; word-break:keep-all; }
+
+  .section-head{ display:flex; align-items:center; gap:11px; margin:24px 0 10px; }
+  .section-head .orb{
+    width:14px; height:14px; border-radius:50%; flex:none;
+    background:radial-gradient(circle at 32% 32%, #fff, var(--orange) 38%, var(--red) 100%);
+    box-shadow:0 0 0 6px rgba(255,130,0,.2), 0 0 16px rgba(255,130,0,.4);
+  }
+  .section-head .label{ font-size:18.5px; font-weight:900; color:var(--ink); letter-spacing:-.01em; }
+  .section-head .subl{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); letter-spacing:.1em; margin-left:2px; }
+  .section-head::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg, var(--line), transparent); margin-left:6px; }
+
+  .table-card{
+    background:rgba(8,13,24,.86); border-radius:14px; border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 16px 40px -20px rgba(0,0,0,.4); overflow:hidden;
+  }
+  table.prog{ width:100%; border-collapse:collapse; font-size:12.3px; }
+  table.prog th{
+    background:rgba(255,255,255,.07); color:var(--ink); font-weight:700; font-size:11px;
+    padding:8px 14px; text-align:left; letter-spacing:.06em; border-bottom:1px solid var(--line);
+    text-transform:uppercase;
+  }
+  table.prog td{ padding:7px 14px; border-bottom:1px solid var(--line); vertical-align:middle; color:var(--ink); line-height:1.42; }
+  table.prog tr.alt td{ background:var(--row-alt); }
+  table.prog td.time{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:12px; color:#FF9B7A; white-space:nowrap; }
+  table.prog td.title-cell{ color:var(--ink); font-weight:500; }
+  table.prog td.speaker{ color:var(--ink-soft); white-space:nowrap; font-size:11.4px; letter-spacing:.01em; }
+  tr.divider td{
+    padding:7px 14px; font-weight:800; font-size:12px; letter-spacing:.05em;
+    background:linear-gradient(90deg, rgba(255,130,0,.22), rgba(218,33,40,.22));
+    color:var(--ink); border-bottom:none; border-top:1px solid var(--line);
+    text-transform:uppercase;
+  }
+  tr.note td{ color:var(--ink-soft); font-size:10.2px; border-bottom:none; padding:6px 14px 8px; font-style:italic; }
+
+  .bottom{ margin-top:22px; padding-top:18px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+  .host-label{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.18em; color:var(--ink-soft); margin-bottom:9px; }
+  .host-names{ font-size:13.5px; font-weight:700; line-height:1.9; }
+  .host-chip{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; box-shadow:0 0 0 3px rgba(255,255,255,.06); }
+  .host-chip.kriss{ background:var(--orange); }
+  .host-chip.kisti{ background:var(--red); }
+  .qr-col{ text-align:center; }
+  #qrcode{ background:#FFFFFF; padding:8px; border:1px solid rgba(255,255,255,.2); border-radius:12px; display:inline-block; line-height:0; box-shadow:0 10px 30px -10px rgba(0,0,0,.5); }
+  .qr-caption{ margin-top:9px; font-size:9px; letter-spacing:.14em; color:var(--ink-soft); line-height:1.4; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="glow a"></div>
+  <div class="glow b"></div>
+  <div class="grid"></div>
+  <svg class="fiber-bg" viewBox="0 0 920 1400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="fiberGrad" x1="0" y1="0" x2="920" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FF8200"/>
+        <stop offset="100%" stop-color="#DA2128"/>
+      </linearGradient>
+      <linearGradient id="fiberGradBright" x1="0" y1="0" x2="920" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FFB25C"/>
+        <stop offset="100%" stop-color="#FF5B52"/>
+      </linearGradient>
+      <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="2.4" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <path class="base" d="M -60,90 C 180,150 320,40 520,150 C 690,240 830,190 980,300" stroke-width="1.6" opacity=".14"/>
+    <path class="base" d="M -60,100 C 180,160 320,50 520,160 C 690,250 830,200 980,310" stroke-width=".8" opacity=".08"/>
+    <path class="beam" pathLength="100" stroke-dasharray="2 22" stroke-width="1.4" opacity=".8" style="animation-duration:5.4s;" d="M -60,90 C 180,150 320,40 520,150 C 690,240 830,190 980,300"/>
+
+    <path class="base" d="M -60,240 C 160,200 320,340 500,300 C 660,270 780,380 980,410" stroke-width="1.3" opacity=".1"/>
+    <path class="beam" pathLength="100" stroke-dasharray="1.6 26" stroke-width="1.1" opacity=".65" style="animation-duration:6.8s; animation-delay:-1.2s;" d="M -60,240 C 160,200 320,340 500,300 C 660,270 780,380 980,410"/>
+
+    <path class="base" d="M -60,520 C 190,570 340,480 540,580 C 720,670 830,600 980,720" stroke-width="1.6" opacity=".13"/>
+    <path class="base" d="M -60,532 C 190,582 340,492 540,592 C 720,682 830,612 980,732" stroke-width=".8" opacity=".07"/>
+    <path class="beam" pathLength="100" stroke-dasharray="2 22" stroke-width="1.4" opacity=".8" style="animation-duration:4.8s; animation-delay:-2.4s;" d="M -60,520 C 190,570 340,480 540,580 C 720,670 830,600 980,720"/>
+
+    <path class="base" d="M -60,760 C 180,720 350,830 540,780 C 710,740 820,850 980,800" stroke-width="1.2" opacity=".09"/>
+    <path class="beam" pathLength="100" stroke-dasharray="1.6 26" stroke-width="1" opacity=".6" style="animation-duration:7.4s; animation-delay:-.6s;" d="M -60,760 C 180,720 350,830 540,780 C 710,740 820,850 980,800"/>
+
+    <path class="base" d="M -60,1040 C 200,1090 380,1010 580,1100 C 750,1180 860,1120 980,1240" stroke-width="1.6" opacity=".13"/>
+    <path class="beam" pathLength="100" stroke-dasharray="2 22" stroke-width="1.4" opacity=".8" style="animation-duration:5.9s; animation-delay:-3.1s;" d="M -60,1040 C 200,1090 380,1010 580,1100 C 750,1180 860,1120 980,1240"/>
+
+    <path class="base" d="M -60,1250 C 210,1300 390,1220 590,1310 C 760,1380 870,1330 980,1400" stroke-width="1.2" opacity=".09"/>
+    <path class="beam" pathLength="100" stroke-dasharray="1.6 26" stroke-width="1" opacity=".6" style="animation-duration:6.3s; animation-delay:-1.8s;" d="M -60,1250 C 210,1300 390,1220 590,1310 C 760,1380 870,1330 980,1400"/>
+
+    <g class="node">
+      <rect x="514" y="144" width="9" height="9" rx="2" transform="rotate(45 518.5 148.5)" fill="#FF8200" opacity=".55"/>
+      <rect x="534" y="574" width="9" height="9" rx="2" transform="rotate(45 538.5 578.5)" fill="#DA2128" opacity=".5"/>
+      <rect x="574" y="1094" width="9" height="9" rx="2" transform="rotate(45 578.5 1098.5)" fill="#FF8200" opacity=".55"/>
+      <rect x="824" y="600" width="7" height="7" rx="1.5" transform="rotate(45 827.5 603.5)" fill="#DA2128" opacity=".4"/>
+    </g>
+
+    <circle class="pulse d1" cx="320" cy="70" r="3.2" fill="#FF8200"/>
+    <circle class="pulse d3" cx="780" cy="230" r="3" fill="#DA2128"/>
+    <circle class="pulse d2" cx="300" cy="330" r="2.6" fill="#FF8200"/>
+    <circle class="pulse d4" cx="660" cy="278" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d1" cx="340" cy="480" r="3" fill="#FF8200"/>
+    <circle class="pulse d2" cx="830" cy="600" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d3" cx="350" cy="830" r="2.6" fill="#FF8200"/>
+    <circle class="pulse d5" cx="710" cy="740" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d1" cx="380" cy="1010" r="3" fill="#FF8200"/>
+    <circle class="pulse d5" cx="860" cy="1120" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d2" cx="390" cy="1220" r="2.8" fill="#FF8200"/>
+    <circle class="pulse d4" cx="760" cy="1380" r="3" fill="#DA2128"/>
+  </svg>
+  <div class="spine">
+    <div class="spine-label top">UTC(KRIS)</div>
+    <div class="spine-label bottom">KREONET</div>
+  </div>
+
+  <div class="content">
+    <div class="eyebrow-top">CO-HOSTED BY KRISS<span class="dot">·</span>KISTI</div>
+    <div class="hero">
+      <div class="hero-logo-row">
+        <svg class="hero-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="92" fill="none" stroke="#FFFFFF" stroke-width="7"/><line x1="100.0" y1="17.0" x2="100.0" y2="34.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="141.5" y1="28.1" x2="136.0" y2="37.6" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="171.9" y1="58.5" x2="162.4" y2="64.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="183.0" y1="100.0" x2="166.0" y2="100.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="171.9" y1="141.5" x2="162.4" y2="136.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="141.5" y1="171.9" x2="136.0" y2="162.4" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="100.0" y1="183.0" x2="100.0" y2="166.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="58.5" y1="171.9" x2="64.0" y2="162.4" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="28.1" y1="141.5" x2="37.6" y2="136.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="17.0" y1="100.0" x2="34.0" y2="100.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="28.1" y1="58.5" x2="37.6" y2="64.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="58.5" y1="28.1" x2="64.0" y2="37.6" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><path d="M108,102 Q98.3,72.8 74,54" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q132.4,104.7 152,90" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q79.3,114.1 62,140" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q115.7,128.2 138,144" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><circle cx="74" cy="54" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="152" cy="90" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="62" cy="140" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="138" cy="144" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="108" cy="102" r="12" fill="#FF8200"/><circle cx="108" cy="102" r="20" fill="none" stroke="#FF8200" stroke-opacity="0.45" stroke-width="4"/></svg>
+        <div class="wordmark-text">Time-Net Korea <span class="year-inline">2026</span></div>
+      </div>
+      <div class="subtitle">국가 시간·주파수 전송망 구축을 위한 워크숍</div>
+
+      <div class="hero-banner">
+        <svg viewBox="0 0 820 210" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hbFlow1" x1="60" y1="0" x2="360" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FF8200"/>
+              <stop offset="100%" stop-color="#FF6B4A"/>
+            </linearGradient>
+            <linearGradient id="hbFlow2" x1="370" y1="0" x2="700" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FF6B4A"/>
+              <stop offset="100%" stop-color="#DA2128"/>
+            </linearGradient>
+            <radialGradient id="hbClockGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFB25C" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#FF8200" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="hbNetGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFA95C" stop-opacity=".85"/>
+              <stop offset="100%" stop-color="#FF6B4A" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="hbGlow" x="-80%" y="-80%" width="260%" height="260%">
+              <feGaussianBlur stdDeviation="3" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- STAGE 1: TIME -> NETWORK -->
+          <path d="M 128,105 C 210,72 290,138 345,105" fill="none" stroke="url(#hbFlow1)" stroke-width="1.4" opacity=".5"/>
+          <path d="M 128,105 C 210,72 290,138 345,105" fill="none" stroke="#FF8200" stroke-width="1.6" opacity=".9"
+                pathLength="100" stroke-dasharray="3 24" filter="url(#hbGlow)">
+            <animate attributeName="stroke-dashoffset" from="0" to="-108" dur="4s" repeatCount="indefinite"/>
+          </path>
+
+          <!-- TIME: clock -->
+          <circle cx="85" cy="105" r="42" fill="url(#hbClockGlow)"/>
+          <circle cx="85" cy="105" r="28" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="2.4"/>
+          <g stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" opacity=".85">
+            <line x1="85" y1="81" x2="85" y2="87"/><line x1="109" y1="105" x2="103" y2="105"/>
+            <line x1="85" y1="129" x2="85" y2="123"/><line x1="61" y1="105" x2="67" y2="105"/>
+          </g>
+          <line x1="85" y1="105" x2="85" y2="89" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="85" y1="105" x2="97" y2="111" stroke="#FF8200" stroke-width="2.2" stroke-linecap="round" filter="url(#hbGlow)"/>
+          <circle cx="85" cy="105" r="2.8" fill="#FF8200" filter="url(#hbGlow)"/>
+          <text x="85" y="170" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" letter-spacing="3" fill="#FF8200" font-weight="600">TIME</text>
+
+          <!-- NETWORK: hub (concentric broadcast rings) -->
+          <circle cx="370" cy="105" r="42" fill="url(#hbNetGlow)"/>
+          <circle cx="370" cy="105" r="23" fill="none" stroke="#FFFFFF" stroke-opacity=".65" stroke-width="1.8"/>
+          <circle cx="370" cy="105" r="13" fill="none" stroke="#FFFFFF" stroke-opacity=".85" stroke-width="1.6"/>
+          <circle cx="370" cy="105" r="4.5" fill="#FF8200" filter="url(#hbGlow)"/>
+          <text x="370" y="170" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" letter-spacing="3" fill="#FF6B3D" font-weight="600">NETWORK</text>
+
+          <!-- STAGE 2: NETWORK -> APPLICATIONS (7-point symmetric arc) -->
+          <g fill="none" stroke="url(#hbFlow2)" stroke-width="1.1" opacity=".5">
+            <path d="M 405,90 Q 465,55 535,34"/>
+            <path d="M 405,96 Q 515,68 622.8,52.3"/>
+            <path d="M 405,102 Q 545,85 680.2,77"/>
+            <path d="M 405,105 Q 555,105 700,105"/>
+            <path d="M 405,108 Q 545,125 680.2,133"/>
+            <path d="M 405,114 Q 515,142 622.8,157.7"/>
+            <path d="M 405,120 Q 465,155 535,176"/>
+          </g>
+          <g fill="none" stroke="#FF6B4A" stroke-width="1.2" opacity=".85" filter="url(#hbGlow)">
+            <path d="M 405,90 Q 465,55 535,34" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="2.6s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,96 Q 515,68 622.8,52.3" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,102 Q 545,85 680.2,77" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.4s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,105 Q 555,105 700,105" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.8s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,108 Q 545,125 680.2,133" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.2s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,114 Q 515,142 622.8,157.7" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.6s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,120 Q 465,155 535,176" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="4s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- APPLICATIONS: 7 sector icons, symmetric arc -->
+          <g opacity=".95">
+            <!-- VLBI 안테나 (satellite dish, user-provided artwork) -->
+            <g transform="translate(535,34) scale(0.026) translate(-515,-505)" fill="none" stroke="#FFFFFF" stroke-width="64" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 100 930 L 580 930 L 395 625" />
+              <path d="M 285 625 L 100 930" />
+              <path d="M 400 80 C 180 230 215 540 460 670 C 605 745 730 705 820 620" />
+              <path d="M 400 80 C 450 280 540 480 820 620" />
+              <path d="M 400 80 L 785 175 L 820 620" />
+              <path d="M 785 175 L 595 315" />
+              <path d="M 780 85 A 95 95 0 0 1 905 210" />
+              <circle cx="340" cy="565" r="70" fill="#FBFAF7" stroke="none"/>
+            </g>
+            <!-- 통신 (telecom: globe/network grid, user-provided artwork) -->
+            <g transform="translate(622.8,52.3) scale(0.062) translate(-250,-250)" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <clipPath id="globeClip">
+                  <circle cx="250" cy="250" r="230" />
+                </clipPath>
+              </defs>
+              <g clip-path="url(#globeClip)" stroke-width="16">
+                <line x1="0" y1="135" x2="500" y2="135" />
+                <line x1="0" y1="250" x2="500" y2="250" />
+                <line x1="0" y1="365" x2="500" y2="365" />
+                <line x1="250" y1="0" x2="250" y2="500" />
+                <ellipse cx="250" cy="250" rx="135" ry="230" />
+              </g>
+              <circle cx="250" cy="250" r="230" stroke-width="16" />
+            </g>
+            <!-- 금융 (finance: coin) -->
+            <g transform="translate(680.2,77)">
+              <circle cx="0" cy="0" r="11" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+              <text x="0" y="4.5" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#FFFFFF">$</text>
+            </g>
+            <!-- 전력망 (power grid pylon) -->
+            <g transform="translate(700,105)" stroke="#FFFFFF" stroke-width="1.5" fill="none" stroke-linecap="round">
+              <path d="M -9,14 L 0,-12 L 9,14"/>
+              <line x1="-5.5" y1="5" x2="5.5" y2="5"/>
+              <line x1="-3" y1="-3" x2="3" y2="-3"/>
+              <circle cx="-9" cy="14" r="1.3" fill="#FFFFFF" stroke="none"/><circle cx="9" cy="14" r="1.3" fill="#FFFFFF" stroke="none"/>
+            </g>
+            <!-- 방산·국방 (defense: shield) -->
+            <g transform="translate(680.2,133)" stroke="#FFFFFF" stroke-width="1.5" fill="none" stroke-linejoin="round">
+              <path d="M 0,-12 L 9,-7.5 L 9,2.5 Q 9,10.5 0,14.5 Q -9,10.5 -9,2.5 L -9,-7.5 Z"/>
+            </g>
+            <!-- 항법 (navigation: compass) -->
+            <g transform="translate(622.8,157.7)" stroke="#FFFFFF" stroke-width="1.4" fill="none">
+              <circle cx="0" cy="0" r="11"/>
+              <path d="M 0,-6.5 L 2.8,0 L 0,6.5 L -2.8,0 Z" fill="#FFFFFF" stroke="none"/>
+            </g>
+            <!-- 양자 (quantum atom) -->
+            <g transform="translate(535,176)" stroke="#FFFFFF" stroke-width="1.3" fill="none">
+              <ellipse cx="0" cy="0" rx="12" ry="5"/>
+              <ellipse cx="0" cy="0" rx="12" ry="5" transform="rotate(60)"/>
+              <ellipse cx="0" cy="0" rx="12" ry="5" transform="rotate(120)"/>
+              <circle cx="0" cy="0" r="2" fill="#FFFFFF" stroke="none"/>
+            </g>
+          </g>
+          <text x="638" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="2.5" fill="#DA2128" font-weight="600">APPLICATIONS</text>
+        </svg>
+        <div class="hero-banner-caption"><b>TIME</b> → <b>NETWORK</b> → <b>APPLICATIONS</b> — VLBI · 통신 · 금융 · 전력망 · 방산 · 항법 · 양자</div>
+      </div>
+
+      <div class="accent-bar"></div>
+      <div class="pass-card">
+        <div class="datevenue">2026. 10. 29. (THU) 09:00–17:45<span class="sep">·</span>한국과학기술회관 대회의실 2</div>
+        <div class="subvenue">서울 강남구 테헤란로7길 22(역삼동 635-4), 1관 지하1층 · 지하철 2호선 강남역 12번 출구 / 역삼역 4번 출구 도보 10분 · 주차 혼잡, 대중교통 권장</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="orb"></div>
+      <div class="label">행사 프로그램</div>
+      <div class="subl">PROGRAM · 2026.10.29(THU)</div>
+    </div>
+
+    <div class="table-card">
+    <table class="prog">
+      <tr><th style="width:92px;">시간</th><th>프로그램 / 발표</th><th style="width:190px;">연사</th></tr>
+      <tr><td class="time">09:00–10:00</td><td class="title-cell">등록 Registration &amp; Welcome</td><td class="speaker"></td></tr>
+      <tr class="alt"><td class="time">10:00–10:15</td><td class="title-cell">개회사 Opening Remarks</td><td class="speaker">이호성 원장 (KRISS)<br>이 식 원장 (KISTI)</td></tr>
+
+      <tr class="divider"><td colspan="3">총론 OVERVIEW — 좌장 허명선 그룹장 (KRISS)</td></tr>
+      <tr><td class="time">10:15–10:30</td><td class="title-cell">공공재로서의 대한민국 표준시<br><span style="color:var(--ink-soft);font-size:11px;">Korea Standard Time as a public utility in Korea</span></td><td class="speaker">허명선 그룹장 (KRISS)</td></tr>
+      <tr class="alt"><td class="time">10:30–11:00</td><td class="title-cell">국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망</td><td class="speaker">조부승 센터장 (KISTI)</td></tr>
+      <tr><td class="time">11:00–11:30</td><td class="title-cell">AI-자동화 시대의 시간 비동기화 이슈와 국가안보</td><td class="speaker">윤정현 연구위원<br>(국가안보전략연구원)</td></tr>
+      <tr class="alt"><td class="time">11:30–12:00</td><td class="title-cell">불확실성의 시대, 강인한 시각 정보 확보의 중요성</td><td class="speaker">Neil Pitman<br>(Adtran/Oscilloquartz)</td></tr>
+      <tr><td class="time">12:00–13:30</td><td class="title-cell" style="color:var(--ink-soft);">사진촬영 및 오찬 Lunch</td><td class="speaker"></td></tr>
+
+      <tr class="divider"><td colspan="3">국가 기반시설과 시각동기 · TIMING AND THE NATIONAL INFRASTRUCTURES — 좌장 조부승 센터장 (KISTI)</td></tr>
+      <tr class="alt"><td class="time">13:30–13:55</td><td class="title-cell">대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기</td><td class="speaker">김충효 책임연구원 (한국전력공사)</td></tr>
+      <tr><td class="time">13:55–14:20</td><td class="title-cell">지상파 항법에서의 시각동기</td><td class="speaker">서기열 박사 (KRISO)</td></tr>
+      <tr class="alt"><td class="time">14:20–14:45</td><td class="title-cell">VLBI에서의 정밀시각주파수, KVN에서의 활용</td><td class="speaker">정태현 센터장 (KASI)</td></tr>
+      <tr><td class="time">14:45–15:10</td><td class="title-cell">양자 암호 통신의 시각 동기화</td><td class="speaker">염다현 수석연구원 (IDQ)</td></tr>
+      <tr class="alt"><td class="time">15:10–15:30</td><td class="title-cell" style="color:var(--ink-soft);">휴식 Coffee Break</td><td class="speaker"></td></tr>
+
+      <tr class="divider"><td colspan="3">시각 솔루션 · TIMING SOLUTIONS — 좌장 유대혁 단장 (KRISS)</td></tr>
+      <tr><td class="time">15:30–16:00</td><td class="title-cell">유럽의 광섬유 시각주파수 전송망 <span style="color:#FF9B7A;">(Online)</span></td><td class="speaker">Cecilia Clivati (INRiM)</td></tr>
+      <tr class="alt"><td class="time">16:00–16:30</td><td class="title-cell">상용 원자시계 및 타이밍 솔루션</td><td class="speaker">이인섭 이사 (Microchip)</td></tr>
+      <tr><td class="time">16:30–16:55</td><td class="title-cell">양자 통신에서의 타이밍 솔루션</td><td class="speaker">이정호 대표 (이투비비)</td></tr>
+      <tr class="alt"><td class="time">16:55–17:20</td><td class="title-cell">통신분야 타이밍 솔루션</td><td class="speaker">김정대 이사 (Cisco)</td></tr>
+      <tr><td class="time">17:20–17:45</td><td class="title-cell">아시아에서의 시각 서비스</td><td class="speaker">염병국 팀장 (KTsat)</td></tr>
+      <tr class="alt"><td class="time">17:45</td><td class="title-cell" style="color:var(--ink-soft);">폐회 Closing</td><td class="speaker"></td></tr>
+      <tr class="note"><td colspan="3">* 세부 연사 및 프로그램은 사정에 따라 변경될 수 있습니다.</td></tr>
+    </table>
+    </div>
+
+    <div class="bottom">
+      <div class="host-col">
+        <div class="host-label">주관 ORGANIZED BY</div>
+        <div class="host-names"><span class="host-chip kriss"></span>한국표준과학연구원 KRISS &nbsp;&nbsp;<span class="host-chip kisti"></span>한국과학기술정보연구원 KISTI</div>
+      </div>
+      <div class="qr-col">
+        <div id="qrcode"></div>
+        <div class="qr-caption">SCAN FOR PROGRAM<br>&amp; REGISTRATION</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://sites.google.com/view/time-net-korea/home",
+    width: 84, height: 84,
+    colorDark: "#22262B",
+    colorLight: "#FFFFFF",
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
+</body>
+</html>

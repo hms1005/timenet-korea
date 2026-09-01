@@ -18,6 +18,7 @@ CSS(여백·애니메이션 정지 등)를 입힌 사본을 임시 폴더에 만
     python3 tools/build_assets.py poster-bi     # 다크 한영병기만
     python3 tools/build_assets.py poster-light-bi  # 라이트 한영병기만
     python3 tools/build_assets.py poster-bi-large  # 다크 한영병기 확대판만
+    python3 tools/build_assets.py poster-light-bi-large  # 라이트 한영병기 확대판만
 
 Pillow 필요: python3 -m pip install pillow
 """
@@ -45,12 +46,22 @@ POSTERS = [
     {'key': 'poster_light', 'name': 'timenet_korea_poster_Hyun_light', 'page': '#F8F7F4'},
     {'key': 'poster_bi',    'name': 'timenet_korea_poster_Hyun_dark_bilingual', 'page': '#05070d'},
     {'key': 'poster_light_bi', 'name': 'timenet_korea_poster_Hyun_light_bilingual', 'page': '#F8F7F4'},
-    # 인쇄용 확대판. 내용은 다크 병기판과 같고 글자만 키웠다(tools/fit_large.py 참고).
+    # 인쇄용 확대판. 내용은 병기판과 같고 글자만 키웠다(tools/fit_large.py 참고).
     {'key': 'poster_bi_large', 'name': 'timenet_korea_poster_Hyun_dark_bilingual_large', 'page': '#05070d'},
+    {'key': 'poster_light_bi_large', 'name': 'timenet_korea_poster_Hyun_light_bilingual_large', 'page': '#F8F7F4'},
 ]
 for _p in POSTERS:
     _p['src'] = os.path.join(ROOT, _p['name'] + '.html')
-POSTER = POSTERS[0]['src']          # 대조(check) 기준은 다크 포스터
+
+# 쓰지 않게 된 판은 old/ 로 옮겨 보관한다. 목록에서 지우는 대신 소스가
+# 없으면 건너뛴다. 나중에 되돌려 놓으면 손댈 것 없이 다시 빌드된다.
+_gone = [p for p in POSTERS if not os.path.exists(p['src'])]
+POSTERS = [p for p in POSTERS if os.path.exists(p['src'])]
+if _gone:
+    print('건너뜀(소스 없음): ' + ', '.join(p['name'] for p in _gone))
+if not POSTERS:
+    raise SystemExit('포스터 소스를 하나도 찾지 못했습니다.')
+POSTER = POSTERS[0]['src']          # 대조(check) 기준은 목록의 첫 포스터
 
 PROGRAM_W = 1000          # 렌더 폭(px). 화면용 여백은 아래 CSS 로 넓힌다.
 POSTER_W  = 920           # --poster-w 가 없는 옛 포스터의 기본 폭
@@ -376,18 +387,19 @@ def main():
         print('프로그램 렌더링...')
         build_program()
         built.add('program')
-    if what in ('all', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large'):
+    if what in ('all', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large', 'poster-light-bi-large'):
         want = {'poster-dark': ['poster'], 'poster-light': ['poster_light'],
                 'poster-bi': ['poster_bi'],
                 'poster-light-bi': ['poster_light_bi'],
-                'poster-bi-large': ['poster_bi_large']}.get(what, [p['key'] for p in POSTERS])
+                'poster-bi-large': ['poster_bi_large'],
+                'poster-light-bi-large': ['poster_light_bi_large']}.get(what, [p['key'] for p in POSTERS])
         for p in POSTERS:
             if p['key'] in want:
                 print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
                       % p['name'].replace('timenet_korea_poster_Hyun_', ''))
                 build_poster(p)
                 built.add(p['key'])
-    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large'):
+    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large', 'poster-light-bi-large'):
         _, now = stale()
         write_stamp(now, built)
 

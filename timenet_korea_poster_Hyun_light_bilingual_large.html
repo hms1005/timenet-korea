@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Time-Net Korea 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#22262B; --ink-soft:#5B5F66;
+    --paper:#F8F7F4; --line:#E3E1DA; --row-alt:#F6F3EC;
+    --orange:#FF8200; --red:#DA2128;
+    --poster-w:1260px;   /* 병기판은 표가 두 줄이라 더 높다. A0 상자를 그만큼 키워 담는다 */
+    /* 인쇄용 확대판: 모든 font-size 를 --s 배로 키운다. 값은
+       `python3 tools/fit_large.py` 가 "A0 상자 안에 들어가는 최대치"로
+       정해 써 넣는다. 표 내용을 고쳤으면 그 스크립트를 다시 돌릴 것. */
+    --s:1.162;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:#c9cac6;}
+  body{ display:flex; justify-content:center; padding:40px 12px; font-family:'Noto Sans KR',sans-serif; }
+  /* A0(841x1189mm) 비율 고정. 폭은 임의이고 인쇄할 때 A0 로 확대하면 된다.
+     내용이 이 상자보다 짧으면 남는 공간은 .bottom 의 margin-top:auto 가 아래로 밀어 흡수한다. */
+  .poster{
+    position:relative; width:var(--poster-w); aspect-ratio:841 / 1189; display:flex;
+    background:var(--paper); color:var(--ink); overflow:hidden;
+    box-shadow:0 40px 90px -24px rgba(0,0,0,.42), 0 2px 0 rgba(0,0,0,.04);
+    border:1px solid rgba(0,0,0,.06);
+  }
+  .glow{ position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+  .glow.a{ width:460px; height:460px; right:-160px; top:-180px; background:radial-gradient(circle, rgba(255,130,0,.14), transparent 70%); }
+  .glow.b{ width:420px; height:420px; left:-140px; bottom:-140px; background:radial-gradient(circle, rgba(218,33,40,.12), transparent 70%); }
+  .grid{
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(34,38,43,.04) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, rgba(34,38,43,.04) 0 1px, transparent 1px 40px);
+    pointer-events:none;
+  }
+  .fiber-bg{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+  .fiber-bg .base{ fill:none; stroke:url(#fiberGrad); stroke-linecap:round; }
+  .fiber-bg .beam{
+    fill:none; stroke:url(#fiberGradBright); stroke-linecap:round; filter:url(#glow);
+    animation:fiberFlow linear infinite;
+  }
+  .fiber-bg .node{ filter:url(#glow); }
+  .fiber-bg .pulse{ transform-box:fill-box; transform-origin:center; filter:url(#glow); animation:fiberPulse 3.4s ease-in-out infinite; }
+  .fiber-bg .pulse.d2{ animation-delay:.5s; }
+  .fiber-bg .pulse.d3{ animation-delay:1s; }
+  .fiber-bg .pulse.d4{ animation-delay:1.6s; }
+  .fiber-bg .pulse.d5{ animation-delay:2.1s; }
+  @keyframes fiberPulse{ 0%,100%{ opacity:.28; transform:scale(.8);} 50%{ opacity:.95; transform:scale(1.3);} }
+  @keyframes fiberFlow{ to{ stroke-dashoffset:-120; } }
+  /* signature rail: KRISS orange -> KISTI red */
+  .spine{
+    position:absolute; left:0; top:0; bottom:0; width:34px;
+    background:linear-gradient(180deg, var(--orange) 0%, var(--orange) 44%, var(--red) 56%, var(--red) 100%);
+    box-shadow:2px 0 14px rgba(0,0,0,.12);
+  }
+  .spine::before{
+    content:""; position:absolute; inset:0;
+    background-image:repeating-linear-gradient(180deg, rgba(255,255,255,.6) 0 2px, transparent 2px 16px);
+  }
+  .spine-label{
+    position:absolute; left:8px; writing-mode:vertical-rl; text-orientation:mixed;
+    font-family:'IBM Plex Mono',monospace; font-size:calc(11px * var(--s)); letter-spacing:.12em;
+    color:rgba(255,255,255,.92);
+  }
+  .spine-label.top{ top:28px; }
+  .spine-label.bottom{ bottom:28px; }
+
+  .content{ position:relative; margin-left:34px; padding:24px 26px 20px 26px;
+            flex:1; min-width:0; display:flex; flex-direction:column; }
+
+
+  .hero{ position:relative; text-align:center; margin-bottom:6px; }
+  .hero-logo-row{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:4px; }
+  .hero-icon{ height:70px; width:auto; flex:none; filter:drop-shadow(0 6px 14px rgba(0,0,0,.12)); }
+  .wordmark-text{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:calc(46px * var(--s)); line-height:1;
+    letter-spacing:-.01em; color:var(--ink); white-space:nowrap;
+  }
+  .wordmark-text .year-inline{
+    background:linear-gradient(120deg, var(--orange), var(--red));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .subtitle{
+    margin-top:10px; font-family:'Space Grotesk',sans-serif; font-size:calc(15.5px * var(--s)); font-weight:500;
+    color:var(--red); letter-spacing:.055em;
+  }
+  .accent-bar{ width:64px; height:3px; margin:9px auto 11px; border-radius:4px; background:linear-gradient(90deg, var(--orange), var(--red)); }
+
+  .hero-banner{
+    position:relative; margin:6px auto 0; max-width:none;
+  }
+  .hero-banner svg{ display:block; width:100%; max-width:664px; height:auto; margin:0 auto; }
+  .hero-banner-caption{
+    padding:3px 20px 0; text-align:center; font-family:'IBM Plex Mono',monospace;
+    font-size:calc(10px * var(--s)); letter-spacing:.12em; color:var(--ink-soft);
+  }
+  .hero-banner-caption b{ color:#FF8200; font-weight:600; }
+
+  .pass-card{
+    display:inline-block; margin:0 auto; padding:10px 24px; border-radius:12px;
+    background:#FFFFFF; border:1px solid var(--line); box-shadow:0 10px 26px -12px rgba(0,0,0,.14);
+  }
+  .datevenue{ font-size:calc(17px * var(--s)); font-weight:700; color:var(--ink); word-break:keep-all; }
+  .datevenue .sep{ color:var(--ink-soft); margin:0 10px; font-weight:400; }
+  .subvenue{ margin-top:5px; font-size:calc(11.2px * var(--s)); color:var(--ink-soft); line-height:1.6; word-break:keep-all; }
+
+  .section-head{ display:flex; align-items:center; gap:11px; margin:15px 0 8px; }
+  .section-head .orb{
+    width:14px; height:14px; border-radius:50%; flex:none;
+    background:radial-gradient(circle at 32% 32%, #fff, var(--orange) 38%, var(--red) 100%);
+    box-shadow:0 0 0 5px rgba(255,130,0,.12);
+  }
+  .section-head .label{ font-size:calc(18.5px * var(--s)); font-weight:900; color:var(--ink); letter-spacing:-.01em; }
+  .section-head .subl{ font-family:'IBM Plex Mono',monospace; font-size:calc(10.5px * var(--s)); color:var(--ink-soft); letter-spacing:.1em; margin-left:2px; }
+  .section-head::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg, var(--line), transparent); margin-left:6px; }
+
+  /* flex 자식은 기본값(flex-shrink:1)이면 상자 높이에 맞춰 눌린다.
+     표는 아래가 잘리고 하단 로고는 상자 밖으로 밀려 나가므로 전부 고정한다. */
+  .content > *{ flex:none; }
+  .table-card{ margin-bottom:6px;
+    background:#FFFFFF; border-radius:14px; border:1px solid var(--line);
+    box-shadow:0 16px 40px -20px rgba(0,0,0,.18); overflow:hidden;
+  }
+  table.prog{ width:100%; border-collapse:collapse; font-size:calc(12.3px * var(--s)); }
+  table.prog th{
+    background:#F4F2EC; color:var(--ink); font-weight:700; font-size:calc(11px * var(--s));
+    padding:8px 18px; text-align:left; letter-spacing:.06em; border-bottom:1px solid var(--line);
+    text-transform:uppercase;
+  }
+  table.prog td{ padding:7px 18px; border-bottom:1px solid var(--line); vertical-align:middle; color:var(--ink); line-height:1.46; }
+  table.prog tr.alt td{ background:var(--row-alt); }
+  table.prog td.time{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:calc(12px * var(--s)); color:var(--red); white-space:nowrap; }
+  table.prog td.title-cell{ color:var(--ink); font-weight:500; }
+  table.prog td.speaker{ color:var(--ink-soft); white-space:nowrap; font-size:calc(11.4px * var(--s)); letter-spacing:.01em; }
+  /* 시각 솔루션 세션의 30분 발표 두 건은 업체 소개가 아니라 총론이다. 포스터 표에는
+     분야 태그가 없어 아래 25분 발표들과 구분되지 않으므로 제목 앞에 표시해 둔다. */
+  /* 개회사처럼 한 칸에 두 사람이 들어가는 행에서 이름 폭을 맞춘다.
+     낱자를 하나씩 <span> 으로 감싸야 space-between 이 글자 사이를 벌린다.
+     (timenet_program.html 의 .spk-name 과 같은 방식) */
+  table.prog .spk-line{ display:block; white-space:nowrap; }
+  table.prog .spk-line + .spk-line{ margin-top:3px; }
+  table.prog .spk-name{
+    display:inline-flex; justify-content:space-between;
+    width:3em; margin-right:.45em; vertical-align:baseline;
+  }
+  /* 좌장은 연사 열과 같은 칸에 두어 아래 연사 이름들과 왼쪽 끝이 맞는다 */
+  tr.divider td.chair{
+    font-weight:600; font-size:calc(11px * var(--s)); letter-spacing:.02em; text-transform:none;
+    opacity:.86; white-space:nowrap;
+  }
+  table.prog .tag{
+    display:inline-block; margin-right:7px; padding:1px 6px 2px; border-radius:4px;
+    font-size:calc(9.6px * var(--s)); font-weight:700; letter-spacing:.02em; vertical-align:1.5px;
+    color:#B35A00; background:rgba(255,130,0,.12); border:1px solid rgba(255,130,0,.42);
+  }
+  tr.divider td{
+    padding:7px 18px; font-weight:800; font-size:calc(12px * var(--s)); letter-spacing:.05em;
+    background:linear-gradient(90deg, rgba(255,130,0,.13), rgba(218,33,40,.13));
+    color:var(--ink); border-bottom:none; border-top:1px solid var(--line);
+    text-transform:uppercase;
+  }
+  /* 국·영문 병기: 국문 아래 줄에 영문을 작게 붙인다. 행이 두 줄이 되므로
+     포스터 폭(--poster-w)을 키워 A0 상자 안에서 세로 여유를 확보한다. */
+  table.prog .en{
+    display:block; margin-top:1px; font-size:calc(10.4px * var(--s)); font-weight:400;
+    color:var(--ink-soft); letter-spacing:.005em; line-height:1.36;
+  }
+  table.prog th .en{ display:inline; margin:0 0 0 .5em; font-size:calc(9.4px * var(--s)); letter-spacing:.09em; opacity:.75; }
+  tr.divider td .en{ display:inline; margin:0; font-size:calc(11px * var(--s)); opacity:.8; }
+  tr.note td{ color:var(--ink-soft); font-size:calc(10.2px * var(--s)); border-bottom:none; padding:6px 18px 8px; font-style:italic; }
+
+  .bottom{ margin-top:auto; padding-top:12px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+  .host-label{ font-family:'IBM Plex Mono',monospace; font-size:calc(10.5px * var(--s)); letter-spacing:.18em; color:var(--ink-soft); margin-bottom:9px; }
+  .host-logos{ display:flex; align-items:center; gap:22px; margin-bottom:9px; }
+  .host-logos img,
+  .host-logos svg{ display:block; width:auto; }
+  .host-logos .kriss{ height:26px; }
+  .host-logos .kisti{ height:44px; }   /* 궤도 장식이 위아래로 크게 나와 있어, 글자 크기를 KRISS 와 맞추려면 이 정도가 필요하다 */
+  .host-logos .div{ width:1px; height:24px; background:var(--line); flex:none; }
+  .host-names{ font-size:calc(12px * var(--s)); font-weight:500; color:var(--ink-soft); letter-spacing:.01em; }
+  .qr-col{ text-align:center; }
+  #qrcode{ background:#FFFFFF; padding:8px; border:1px solid var(--line); border-radius:12px; display:inline-block; line-height:0; box-shadow:0 10px 22px -14px rgba(0,0,0,.2); }
+  .qr-caption{ margin-top:9px; font-size:calc(9px * var(--s)); letter-spacing:.14em; color:var(--ink-soft); line-height:1.4; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="glow a"></div>
+  <div class="glow b"></div>
+  <div class="grid"></div>
+  <svg class="fiber-bg" viewBox="0 0 920 1400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="fiberGrad" x1="0" y1="0" x2="920" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FF8200"/>
+        <stop offset="100%" stop-color="#DA2128"/>
+      </linearGradient>
+      <linearGradient id="fiberGradBright" x1="0" y1="0" x2="920" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FFB25C"/>
+        <stop offset="100%" stop-color="#FF5B52"/>
+      </linearGradient>
+      <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="2.4" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <path class="base" d="M -60,90 C 180,150 320,40 520,150 C 690,240 830,190 980,300" stroke-width="1.6" opacity=".14"/>
+    <path class="base" d="M -60,100 C 180,160 320,50 520,160 C 690,250 830,200 980,310" stroke-width=".8" opacity=".08"/>
+    <path class="beam" pathLength="100" stroke-dasharray="2 22" stroke-width="1.4" opacity=".8" style="animation-duration:5.4s;" d="M -60,90 C 180,150 320,40 520,150 C 690,240 830,190 980,300"/>
+
+    <path class="base" d="M -60,240 C 160,200 320,340 500,300 C 660,270 780,380 980,410" stroke-width="1.3" opacity=".1"/>
+    <path class="beam" pathLength="100" stroke-dasharray="1.6 26" stroke-width="1.1" opacity=".65" style="animation-duration:6.8s; animation-delay:-1.2s;" d="M -60,240 C 160,200 320,340 500,300 C 660,270 780,380 980,410"/>
+
+    <path class="base" d="M -60,520 C 190,570 340,480 540,580 C 720,670 830,600 980,720" stroke-width="1.6" opacity=".13"/>
+    <path class="base" d="M -60,532 C 190,582 340,492 540,592 C 720,682 830,612 980,732" stroke-width=".8" opacity=".07"/>
+    <path class="beam" pathLength="100" stroke-dasharray="2 22" stroke-width="1.4" opacity=".8" style="animation-duration:4.8s; animation-delay:-2.4s;" d="M -60,520 C 190,570 340,480 540,580 C 720,670 830,600 980,720"/>
+
+    <path class="base" d="M -60,760 C 180,720 350,830 540,780 C 710,740 820,850 980,800" stroke-width="1.2" opacity=".09"/>
+    <path class="beam" pathLength="100" stroke-dasharray="1.6 26" stroke-width="1" opacity=".6" style="animation-duration:7.4s; animation-delay:-.6s;" d="M -60,760 C 180,720 350,830 540,780 C 710,740 820,850 980,800"/>
+
+    <path class="base" d="M -60,1040 C 200,1090 380,1010 580,1100 C 750,1180 860,1120 980,1240" stroke-width="1.6" opacity=".13"/>
+    <path class="beam" pathLength="100" stroke-dasharray="2 22" stroke-width="1.4" opacity=".8" style="animation-duration:5.9s; animation-delay:-3.1s;" d="M -60,1040 C 200,1090 380,1010 580,1100 C 750,1180 860,1120 980,1240"/>
+
+    <path class="base" d="M -60,1250 C 210,1300 390,1220 590,1310 C 760,1380 870,1330 980,1400" stroke-width="1.2" opacity=".09"/>
+    <path class="beam" pathLength="100" stroke-dasharray="1.6 26" stroke-width="1" opacity=".6" style="animation-duration:6.3s; animation-delay:-1.8s;" d="M -60,1250 C 210,1300 390,1220 590,1310 C 760,1380 870,1330 980,1400"/>
+
+    <g class="node">
+      <rect x="514" y="144" width="9" height="9" rx="2" transform="rotate(45 518.5 148.5)" fill="#FF8200" opacity=".55"/>
+      <rect x="534" y="574" width="9" height="9" rx="2" transform="rotate(45 538.5 578.5)" fill="#DA2128" opacity=".5"/>
+      <rect x="574" y="1094" width="9" height="9" rx="2" transform="rotate(45 578.5 1098.5)" fill="#FF8200" opacity=".55"/>
+      <rect x="824" y="600" width="7" height="7" rx="1.5" transform="rotate(45 827.5 603.5)" fill="#DA2128" opacity=".4"/>
+    </g>
+
+    <circle class="pulse d1" cx="320" cy="70" r="3.2" fill="#FF8200"/>
+    <circle class="pulse d3" cx="780" cy="230" r="3" fill="#DA2128"/>
+    <circle class="pulse d2" cx="300" cy="330" r="2.6" fill="#FF8200"/>
+    <circle class="pulse d4" cx="660" cy="278" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d1" cx="340" cy="480" r="3" fill="#FF8200"/>
+    <circle class="pulse d2" cx="830" cy="600" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d3" cx="350" cy="830" r="2.6" fill="#FF8200"/>
+    <circle class="pulse d5" cx="710" cy="740" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d1" cx="380" cy="1010" r="3" fill="#FF8200"/>
+    <circle class="pulse d5" cx="860" cy="1120" r="2.8" fill="#DA2128"/>
+    <circle class="pulse d2" cx="390" cy="1220" r="2.8" fill="#FF8200"/>
+    <circle class="pulse d4" cx="760" cy="1380" r="3" fill="#DA2128"/>
+  </svg>
+  <div class="spine">
+    <div class="spine-label top">UTC(KRIS)</div>
+    <div class="spine-label bottom">KREONET</div>
+  </div>
+
+  <div class="content">
+    <div class="hero">
+      <div class="hero-logo-row">
+        <svg class="hero-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="92" fill="none" stroke="#53565A" stroke-width="7"/><line x1="100.0" y1="17.0" x2="100.0" y2="34.0" stroke="#53565A" stroke-width="5" stroke-linecap="round"/><line x1="141.5" y1="28.1" x2="136.0" y2="37.6" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><line x1="171.9" y1="58.5" x2="162.4" y2="64.0" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><line x1="183.0" y1="100.0" x2="166.0" y2="100.0" stroke="#53565A" stroke-width="5" stroke-linecap="round"/><line x1="171.9" y1="141.5" x2="162.4" y2="136.0" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><line x1="141.5" y1="171.9" x2="136.0" y2="162.4" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><line x1="100.0" y1="183.0" x2="100.0" y2="166.0" stroke="#53565A" stroke-width="5" stroke-linecap="round"/><line x1="58.5" y1="171.9" x2="64.0" y2="162.4" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><line x1="28.1" y1="141.5" x2="37.6" y2="136.0" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><line x1="17.0" y1="100.0" x2="34.0" y2="100.0" stroke="#53565A" stroke-width="5" stroke-linecap="round"/><line x1="28.1" y1="58.5" x2="37.6" y2="64.0" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><line x1="58.5" y1="28.1" x2="64.0" y2="37.6" stroke="#53565A" stroke-width="3" stroke-linecap="round"/><path d="M108,102 Q98.3,72.8 74,54" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q132.4,104.7 152,90" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q79.3,114.1 62,140" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q115.7,128.2 138,144" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><circle cx="74" cy="54" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="152" cy="90" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="62" cy="140" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="138" cy="144" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="108" cy="102" r="12" fill="#FF8200"/><circle cx="108" cy="102" r="20" fill="none" stroke="#FF8200" stroke-opacity="0.45" stroke-width="4"/></svg>
+        <div class="wordmark-text">Time-Net Korea <span class="year-inline">2026</span></div>
+      </div>
+      <div class="subtitle">Pioneering Advanced Resilient Time-Frequency Network</div>
+
+      <div class="hero-banner">
+        <svg viewBox="36 16 682 196" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hbFlow1" x1="60" y1="0" x2="360" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FF8200"/>
+              <stop offset="100%" stop-color="#FF6B4A"/>
+            </linearGradient>
+            <linearGradient id="hbFlow2" x1="370" y1="0" x2="700" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#FF6B4A"/>
+              <stop offset="100%" stop-color="#DA2128"/>
+            </linearGradient>
+            <radialGradient id="hbClockGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFB25C" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#FF8200" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="hbNetGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFA95C" stop-opacity=".85"/>
+              <stop offset="100%" stop-color="#FF6B4A" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="hbGlow" x="-80%" y="-80%" width="260%" height="260%">
+              <feGaussianBlur stdDeviation="3" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- STAGE 1: TIME -> NETWORK -->
+          <path d="M 128,105 C 210,72 290,138 345,105" fill="none" stroke="url(#hbFlow1)" stroke-width="1.4" opacity=".5"/>
+          <path d="M 128,105 C 210,72 290,138 345,105" fill="none" stroke="#FF8200" stroke-width="1.6" opacity=".9"
+                pathLength="100" stroke-dasharray="3 24" filter="url(#hbGlow)">
+            <animate attributeName="stroke-dashoffset" from="0" to="-108" dur="4s" repeatCount="indefinite"/>
+          </path>
+
+          <!-- TIME: clock -->
+          <circle cx="85" cy="105" r="42" fill="url(#hbClockGlow)"/>
+          <circle cx="85" cy="105" r="28" fill="none" stroke="#53565A" stroke-opacity=".85" stroke-width="2.4"/>
+          <g stroke="#53565A" stroke-width="1.8" stroke-linecap="round" opacity=".85">
+            <line x1="85" y1="81" x2="85" y2="87"/><line x1="109" y1="105" x2="103" y2="105"/>
+            <line x1="85" y1="129" x2="85" y2="123"/><line x1="61" y1="105" x2="67" y2="105"/>
+          </g>
+          <line x1="85" y1="105" x2="85" y2="89" stroke="#53565A" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="85" y1="105" x2="97" y2="111" stroke="#FF8200" stroke-width="2.2" stroke-linecap="round" filter="url(#hbGlow)"/>
+          <circle cx="85" cy="105" r="2.8" fill="#FF8200" filter="url(#hbGlow)"/>
+          <text x="85" y="170" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" letter-spacing="3" fill="#FF8200" font-weight="600">TIME</text>
+
+          <!-- NETWORK: hub (concentric broadcast rings) -->
+          <circle cx="370" cy="105" r="42" fill="url(#hbNetGlow)"/>
+          <circle cx="370" cy="105" r="23" fill="none" stroke="#53565A" stroke-opacity=".65" stroke-width="1.8"/>
+          <circle cx="370" cy="105" r="13" fill="none" stroke="#53565A" stroke-opacity=".85" stroke-width="1.6"/>
+          <circle cx="370" cy="105" r="4.5" fill="#FF8200" filter="url(#hbGlow)"/>
+          <text x="370" y="170" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" letter-spacing="3" fill="#FF6B3D" font-weight="600">NETWORK</text>
+
+          <!-- STAGE 2: NETWORK -> APPLICATIONS (7-point symmetric arc) -->
+          <g fill="none" stroke="url(#hbFlow2)" stroke-width="1.1" opacity=".5">
+            <path d="M 405,90 Q 465,55 535,34"/>
+            <path d="M 405,96 Q 515,68 622.8,52.3"/>
+            <path d="M 405,102 Q 545,85 680.2,77"/>
+            <path d="M 405,105 Q 555,105 700,105"/>
+            <path d="M 405,108 Q 545,125 680.2,133"/>
+            <path d="M 405,114 Q 515,142 622.8,157.7"/>
+            <path d="M 405,120 Q 465,155 535,176"/>
+          </g>
+          <g fill="none" stroke="#FF6B4A" stroke-width="1.2" opacity=".85" filter="url(#hbGlow)">
+            <path d="M 405,90 Q 465,55 535,34" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="2.6s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,96 Q 515,68 622.8,52.3" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,102 Q 545,85 680.2,77" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.4s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,105 Q 555,105 700,105" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.8s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,108 Q 545,125 680.2,133" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.2s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,114 Q 515,142 622.8,157.7" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="3.6s" repeatCount="indefinite"/>
+            </path>
+            <path d="M 405,120 Q 465,155 535,176" pathLength="100" stroke-dasharray="2.4 20">
+              <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="4s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- APPLICATIONS: 7 sector icons, symmetric arc -->
+          <g opacity=".95">
+            <!-- VLBI 안테나 (satellite dish, user-provided artwork) -->
+            <g transform="translate(535,34) scale(0.026) translate(-515,-505)" fill="none" stroke="#53565A" stroke-width="64" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 100 930 L 580 930 L 395 625" />
+              <path d="M 285 625 L 100 930" />
+              <path d="M 400 80 C 180 230 215 540 460 670 C 605 745 730 705 820 620" />
+              <path d="M 400 80 C 450 280 540 480 820 620" />
+              <path d="M 400 80 L 785 175 L 820 620" />
+              <path d="M 785 175 L 595 315" />
+              <path d="M 780 85 A 95 95 0 0 1 905 210" />
+              <circle cx="340" cy="565" r="70" fill="#FBFAF7" stroke="none"/>
+            </g>
+            <!-- 통신 (telecom: globe/network grid, user-provided artwork) -->
+            <g transform="translate(622.8,52.3) scale(0.062) translate(-250,-250)" fill="none" stroke="#53565A" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <clipPath id="globeClip">
+                  <circle cx="250" cy="250" r="230" />
+                </clipPath>
+              </defs>
+              <g clip-path="url(#globeClip)" stroke-width="16">
+                <line x1="0" y1="135" x2="500" y2="135" />
+                <line x1="0" y1="250" x2="500" y2="250" />
+                <line x1="0" y1="365" x2="500" y2="365" />
+                <line x1="250" y1="0" x2="250" y2="500" />
+                <ellipse cx="250" cy="250" rx="135" ry="230" />
+              </g>
+              <circle cx="250" cy="250" r="230" stroke-width="16" />
+            </g>
+            <!-- 금융 (finance: coin) -->
+            <g transform="translate(680.2,77)">
+              <circle cx="0" cy="0" r="11" fill="none" stroke="#53565A" stroke-width="1.5"/>
+              <text x="0" y="4.5" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#53565A">$</text>
+            </g>
+            <!-- 전력망 (power grid pylon) -->
+            <g transform="translate(700,105)" stroke="#53565A" stroke-width="1.5" fill="none" stroke-linecap="round">
+              <path d="M -9,14 L 0,-12 L 9,14"/>
+              <line x1="-5.5" y1="5" x2="5.5" y2="5"/>
+              <line x1="-3" y1="-3" x2="3" y2="-3"/>
+              <circle cx="-9" cy="14" r="1.3" fill="#53565A" stroke="none"/><circle cx="9" cy="14" r="1.3" fill="#53565A" stroke="none"/>
+            </g>
+            <!-- 방산·국방 (defense: shield) -->
+            <g transform="translate(680.2,133)" stroke="#53565A" stroke-width="1.5" fill="none" stroke-linejoin="round">
+              <path d="M 0,-12 L 9,-7.5 L 9,2.5 Q 9,10.5 0,14.5 Q -9,10.5 -9,2.5 L -9,-7.5 Z"/>
+            </g>
+            <!-- 항법 (navigation: compass) -->
+            <g transform="translate(622.8,157.7)" stroke="#53565A" stroke-width="1.4" fill="none">
+              <circle cx="0" cy="0" r="11"/>
+              <path d="M 0,-6.5 L 2.8,0 L 0,6.5 L -2.8,0 Z" fill="#53565A" stroke="none"/>
+            </g>
+            <!-- 양자 (quantum atom) -->
+            <g transform="translate(535,176)" stroke="#53565A" stroke-width="1.3" fill="none">
+              <ellipse cx="0" cy="0" rx="12" ry="5"/>
+              <ellipse cx="0" cy="0" rx="12" ry="5" transform="rotate(60)"/>
+              <ellipse cx="0" cy="0" rx="12" ry="5" transform="rotate(120)"/>
+              <circle cx="0" cy="0" r="2" fill="#53565A" stroke="none"/>
+            </g>
+          </g>
+          <text x="638" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" letter-spacing="2.5" fill="#DA2128" font-weight="600">APPLICATIONS</text>
+        </svg>
+        <div class="hero-banner-caption"><b>TIME</b> → <b>NETWORK</b> → <b>APPLICATIONS</b> — VLBI · 통신 · 금융 · 전력망 · 방산 · 항법 · 양자</div>
+      </div>
+
+      <div class="accent-bar"></div>
+      <div class="pass-card">
+        <div class="datevenue">2026. 10. 29. (THU) 09:00–17:45<span class="sep">·</span>한국과학기술회관 대회의실 2</div>
+        <div class="subvenue">서울 강남구 테헤란로7길 22(역삼동 635-4), 1관 지하1층 · 지하철 2호선 강남역 12번 출구 / 역삼역 4번 출구 도보 10분 · 주차 혼잡, 대중교통 권장</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="orb"></div>
+      <div class="label">행사 프로그램</div>
+      <div class="subl">PROGRAM · 2026.10.29(THU)</div>
+    </div>
+
+    <div class="table-card">
+    <table class="prog">
+      <tr><th style="width:104px;">시간<span class="en">TIME</span></th><th>프로그램 / 발표<span class="en">PROGRAM</span></th><th style="width:236px;">연사<span class="en">SPEAKER</span></th></tr>
+      <tr><td class="time">09:00–10:00</td><td class="title-cell">등록<span class="en">Registration &amp; Welcome</span></td><td class="speaker"></td></tr>
+      <tr class="alt"><td class="time">10:00–10:15</td><td class="title-cell">개회사<span class="en">Opening Remarks</span></td><td class="speaker"><span class="spk-line"><span class="spk-name"><span>이</span><span>호</span><span>성</span></span>원장 (KRISS)</span><span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장 (KISTI)</span></td></tr>
+
+      <tr class="divider"><td colspan="2">총론 OVERVIEW</td><td class="chair">좌장 <span class="en">CHAIR</span> 허명선 그룹장 (KRISS)</td></tr>
+      <tr><td class="time">10:15–10:30</td><td class="title-cell"><span class="tag">총론</span>공공재로서의 대한민국 표준시<span class="en">Korea Standard Time as a Public Utility in Korea</span></td><td class="speaker">허명선 그룹장 (KRISS)</td></tr>
+      <tr class="alt"><td class="time">10:30–11:00</td><td class="title-cell"><span class="tag">총론</span>국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망<span class="en">Prospects for Time Synchronization Services over the National Research Network</span></td><td class="speaker">조부승 센터장 (KISTI)</td></tr>
+      <tr><td class="time">11:00–11:30</td><td class="title-cell"><span class="tag">총론</span>AI-자동화 시대의 시간 비동기화 이슈와 국가안보<span class="en">Time Desynchronization and National Security in the Era of AI and Automation</span></td><td class="speaker">윤정현 연구위원<br>(국가안보전략연구원)</td></tr>
+      <tr class="alt"><td class="time">11:30–12:00</td><td class="title-cell"><span class="tag">총론</span>불확실성의 시대, 강인한 시각 정보 확보의 중요성<span class="en">Importance of Resilient Timing in an Insecure World</span></td><td class="speaker">Neil Pitman<br>(Adtran/Oscilloquartz)</td></tr>
+      <tr><td class="time">12:00–13:30</td><td class="title-cell" style="color:var(--ink-soft);">사진촬영 및 오찬<span class="en">Photo Session &amp; Lunch</span></td><td class="speaker"></td></tr>
+
+      <tr class="divider"><td colspan="2">국가 기반시설과 시각동기 · TIMING AND THE NATIONAL INFRASTRUCTURES</td><td class="chair">좌장 <span class="en">CHAIR</span> 조부승 센터장 (KISTI)</td></tr>
+      <tr class="alt"><td class="time">13:30–13:55</td><td class="title-cell">대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기<span class="en">Linking the Power Grid to KST: Overcoming GPS Vulnerabilities through Network-Based Time Synchronization</span></td><td class="speaker">김충효 책임연구원 (한국전력공사)</td></tr>
+      <tr><td class="time">13:55–14:20</td><td class="title-cell">지상파 항법에서의 시각동기<span class="en">Timing in Terrestrial Radio Navigation</span></td><td class="speaker">서기열 책임연구원 (KRISO)</td></tr>
+      <tr class="alt"><td class="time">14:20–14:45</td><td class="title-cell">VLBI에서의 정밀시각주파수, KVN에서의 활용<span class="en">Precision Time and Frequency in VLBI: Applications in the Korean VLBI Network</span></td><td class="speaker">정태현 센터장 (KASI)</td></tr>
+      <tr><td class="time">14:45–15:10</td><td class="title-cell">양자 암호 통신의 시각 동기화<span class="en">Time Synchronization in Quantum Cryptography Communication</span></td><td class="speaker">염다현 수석연구원 (IDQ)</td></tr>
+      <tr class="alt"><td class="time">15:10–15:30</td><td class="title-cell" style="color:var(--ink-soft);">휴식<span class="en">Coffee Break</span></td><td class="speaker"></td></tr>
+
+      <tr class="divider"><td colspan="2">시각 솔루션 · TIMING SOLUTIONS</td><td class="chair">좌장 <span class="en">CHAIR</span> 유대혁 단장 (KRISS)</td></tr>
+      <tr><td class="time">15:30–16:00</td><td class="title-cell"><span class="tag">총론</span>유럽의 광섬유 시각주파수 전송망 <span style="color:var(--red);">(Online)</span><span class="en">The European Fiber Network</span></td><td class="speaker">Cecilia Clivati (INRiM)</td></tr>
+      <tr class="alt"><td class="time">16:00–16:30</td><td class="title-cell"><span class="tag">총론</span>상용 원자시계 및 타이밍 솔루션<span class="en">Clocks and Timing Solutions</span></td><td class="speaker">이인섭 이사 (Microchip)</td></tr>
+      <tr><td class="time">16:30–16:55</td><td class="title-cell">초정밀 시각주파수 국가망 구축방안<span class="en">High-precision Timing in National Networks</span></td><td class="speaker">김정대 상무 (Cisco)</td></tr>
+      <tr class="alt"><td class="time">16:55–17:20</td><td class="title-cell">광통신을 이용한 시각동기 솔루션<span class="en">Time Synchronization Solutions using Optical Technology</span></td><td class="speaker">이정호 대표 (이투비비)</td></tr>
+      <tr><td class="time">17:20–17:45</td><td class="title-cell">아시아에서의 시각 서비스<span class="en">Time as a Service in Asia</span></td><td class="speaker">염병국 팀장 (KTsat)</td></tr>
+      <tr class="alt"><td class="time">17:45</td><td class="title-cell" style="color:var(--ink-soft);">폐회<span class="en">Closing</span></td><td class="speaker"></td></tr>
+      <tr class="note"><td colspan="3">* 세부 연사 및 프로그램은 사정에 따라 변경될 수 있습니다.<span class="en">* Speakers and programme details are subject to change.</span></td></tr>
+    </table>
+    </div>
+
+    <div class="bottom">
+      <div class="host-col">
+        <div class="host-label">주관 ORGANIZED BY</div>
+        <div class="host-logos">
+          <svg class="kriss" viewBox="233.88 403.32 128.88 35.88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KRISS"><path fill-rule="nonzero" fill="rgb(95.68634%, 47.450256%, 12.548828%)" fill-opacity="1" d="M 320.234375 434.40625 C 315.765625 434.40625 311.507812 433.5 307.628906 431.867188 L 307.628906 436.730469 C 311.546875 438.226562 315.796875 439.050781 320.234375 439.050781 C 324.480469 439.050781 328.558594 438.296875 332.335938 436.917969 L 332.335938 432.070312 C 328.59375 433.574219 324.507812 434.40625 320.234375 434.40625 "/>
+<path fill-rule="nonzero" fill="rgb(32.156372%, 36.470032%, 36.470032%)" fill-opacity="1" d="M 259.648438 436.484375 L 249.476562 423.964844 L 260.710938 412.253906 L 252.953125 412.253906 L 242.183594 423.78125 L 242.183594 412.253906 L 233.609375 412.253906 L 233.609375 438.171875 L 242.183594 438.171875 L 242.183594 426.773438 L 248.476562 435.425781 C 249.753906 437.121094 251.496094 438.171875 254.742188 438.171875 L 261.734375 438.171875 C 260.941406 437.753906 260.21875 437.15625 259.648438 436.484375 "/>
+<path fill-rule="nonzero" fill="rgb(32.156372%, 36.470032%, 36.470032%)" fill-opacity="1" d="M 294.257812 438.171875 L 302.828125 438.171875 L 302.828125 412.253906 L 294.257812 412.253906 Z M 294.257812 438.171875 "/>
+<path fill-rule="nonzero" fill="rgb(32.156372%, 36.470032%, 36.470032%)" fill-opacity="1" d="M 279.898438 420.382812 C 279.769531 422.882812 276.140625 424.550781 272.851562 424.550781 L 272.851562 416.5625 L 275.621094 416.5625 C 278.546875 416.5625 280.03125 418.285156 279.898438 420.382812 M 289.183594 435.433594 L 281.726562 426.710938 C 284.621094 426.304688 288.9375 423.980469 288.9375 419.75 C 288.9375 416.402344 286.855469 412.253906 276.839844 412.253906 L 264.28125 412.253906 L 264.28125 438.175781 L 272.851562 438.175781 L 272.851562 427.304688 L 279.011719 435.554688 C 279.921875 436.765625 281.289062 438.175781 284.488281 438.175781 L 292.113281 438.175781 C 290.890625 437.527344 290.355469 436.820312 289.183594 435.433594 "/>
+<path fill-rule="nonzero" fill="rgb(32.156372%, 36.470032%, 36.470032%)" fill-opacity="1" d="M 360.171875 413.894531 C 360.171875 413.894531 355.726562 412.253906 349.886719 412.253906 C 342.792969 412.253906 336.667969 414.980469 336.667969 419.425781 C 336.667969 428.328125 353.242188 428.195312 353.242188 432.53125 C 353.242188 433.875 351.144531 434.480469 347.957031 434.480469 C 344.679688 434.480469 340.765625 433.390625 337.246094 430.667969 L 337.246094 436.484375 C 340.148438 438.058594 344.15625 438.929688 348.375 438.929688 C 357.496094 438.929688 362.28125 435.039062 362.28125 430.785156 C 362.28125 422.007812 346.011719 421.683594 346.011719 418.289062 C 346.011719 417.113281 347.644531 416.414062 350.808594 416.414062 C 353.921875 416.414062 357.851562 417.460938 360.171875 419.144531 Z M 360.171875 413.894531 "/>
+<path fill-rule="nonzero" fill="rgb(32.156372%, 36.470032%, 36.470032%)" fill-opacity="1" d="M 330.554688 404.988281 C 330.554688 404.988281 326.105469 403.347656 320.269531 403.347656 C 313.175781 403.347656 307.050781 406.070312 307.050781 410.519531 C 307.050781 419.421875 323.625 419.289062 323.625 423.625 C 323.625 424.96875 321.527344 425.574219 318.339844 425.574219 C 315.0625 425.574219 311.148438 424.484375 307.625 421.761719 L 307.625 427.578125 C 310.527344 429.152344 314.539062 430.023438 318.757812 430.023438 C 327.875 430.023438 332.660156 426.132812 332.660156 421.878906 C 332.660156 413.101562 316.394531 412.777344 316.394531 409.382812 C 316.394531 408.207031 318.023438 407.507812 321.191406 407.507812 C 324.300781 407.507812 328.230469 408.558594 330.554688 410.242188 Z M 330.554688 404.988281 "/></svg>
+          <span class="div"></span>
+          <svg class="kisti" viewBox="211.65 115.24 186.52 104.82" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KISTI"><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 299.464844 193.410156 L 286.566406 193.410156 L 286.566406 159.941406 L 299.464844 159.941406 Z M 299.464844 193.410156 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 357.433594 156.089844 L 357.433594 193.410156 L 344.40625 193.410156 L 344.40625 156.089844 L 334.285156 156.089844 L 334.285156 143.441406 L 367.558594 143.441406 L 367.558594 156.089844 Z M 357.433594 156.089844 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 384.945312 193.410156 L 372.039062 193.410156 L 372.039062 159.941406 L 384.945312 159.941406 Z M 384.945312 193.410156 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 301.140625 149.605469 C 301.140625 154.125 297.480469 157.78125 292.964844 157.78125 C 288.449219 157.78125 284.792969 154.125 284.792969 149.605469 C 284.792969 145.09375 288.449219 141.429688 292.964844 141.429688 C 297.480469 141.429688 301.140625 145.09375 301.140625 149.605469 "/><path fill-rule="nonzero" fill="rgb(85.76355%, 11.999512%, 14.941406%)" fill-opacity="1" d="M 287.125 202.503906 C 312.886719 192.199219 337.175781 178.476562 337.175781 168.230469 C 337.175781 163.058594 333.804688 160 325.136719 158.9375 C 319.53125 158.246094 313.128906 158.828125 314.261719 153.769531 C 315.363281 148.847656 327.929688 144.257812 334.285156 143.441406 L 334.285156 133.289062 C 317.359375 139.089844 302.175781 146.609375 302.175781 157.566406 C 302.175781 162.824219 305.316406 168.3125 314.207031 169.105469 C 322.765625 169.875 324.5625 172.226562 324.5625 175.484375 C 324.5625 181.894531 308.535156 192.199219 287.125 202.503906 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 386.546875 149.605469 C 386.546875 154.125 382.890625 157.78125 378.375 157.78125 C 373.859375 157.78125 370.199219 154.125 370.199219 149.605469 C 370.199219 145.09375 373.859375 141.429688 378.375 141.429688 C 382.890625 141.429688 386.546875 145.09375 386.546875 149.605469 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 221.382812 210.984375 C 216.167969 201.5 239.964844 180.285156 239.964844 180.285156 C 217.429688 196.742188 208.808594 209.597656 212.476562 215.800781 C 216.734375 223 242.1875 221.957031 280.65625 205.125 C 249.746094 217.148438 225.214844 217.953125 221.382812 210.984375 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 397.460938 120.382812 C 390.613281 109.171875 353.222656 116.378906 302.621094 142.566406 C 345.386719 123.128906 383.359375 115.050781 390.628906 125.148438 C 393.019531 128.46875 392.140625 134.996094 386.535156 143.171875 C 391.386719 138.476562 400.925781 126.058594 397.460938 120.382812 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 243.574219 193.410156 L 243.574219 143.441406 L 256.480469 143.441406 L 256.480469 165.660156 L 267.320312 143.441406 L 282.265625 143.441406 L 270.121094 166.207031 L 282.539062 193.410156 L 268.171875 193.410156 L 256.480469 166.785156 L 256.480469 193.410156 Z M 243.574219 193.410156 "/></svg>
+        </div>
+        <div class="host-names">한국표준과학연구원 &nbsp;·&nbsp; 한국과학기술정보연구원</div>
+      </div>
+      <div class="qr-col">
+        <div id="qrcode"></div>
+        <div class="qr-caption">SCAN FOR PROGRAM<br>&amp; REGISTRATION</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://sites.google.com/view/time-net-korea/home",
+    width: 84, height: 84,
+    colorDark: "#22262B",
+    colorLight: "#FFFFFF",
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
+</body>
+</html>

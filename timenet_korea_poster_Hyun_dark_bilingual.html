@@ -11,7 +11,7 @@
     --ink:#F3F4F7; --ink-soft:rgba(255,255,255,.66);
     --paper:#0E1526; --line:rgba(255,255,255,.14); --row-alt:rgba(255,255,255,.04);
     --orange:#FF8200; --red:#DA2128;
-    --poster-w:1084px;   /* A0 비율에서 현재 내용 높이(약 1533px)와 맞는 폭 */
+    --poster-w:1260px;   /* 병기판은 표가 두 줄이라 더 높다. A0 상자를 그만큼 키워 담는다 */
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{background:#05070d;}
@@ -161,6 +161,14 @@
     color:var(--ink); border-bottom:none; border-top:1px solid var(--line);
     text-transform:uppercase;
   }
+  /* 국·영문 병기: 국문 아래 줄에 영문을 작게 붙인다. 행이 두 줄이 되므로
+     포스터 폭(--poster-w)을 키워 A0 상자 안에서 세로 여유를 확보한다. */
+  table.prog .en{
+    display:block; margin-top:1px; font-size:10.4px; font-weight:400;
+    color:var(--ink-soft); letter-spacing:.005em; line-height:1.32;
+  }
+  table.prog th .en{ display:inline; margin:0 0 0 .5em; font-size:9.4px; letter-spacing:.09em; opacity:.75; }
+  tr.divider td .en{ display:inline; margin:0; font-size:11px; opacity:.8; }
   tr.note td{ color:var(--ink-soft); font-size:10.2px; border-bottom:none; padding:6px 18px 8px; font-style:italic; }
 
   .bottom{ margin-top:auto; padding-top:18px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
@@ -414,32 +422,32 @@
 
     <div class="table-card">
     <table class="prog">
-      <tr><th style="width:104px;">시간</th><th>프로그램 / 발표</th><th style="width:236px;">연사</th></tr>
-      <tr><td class="time">09:00–10:00</td><td class="title-cell">등록</td><td class="speaker"></td></tr>
-      <tr class="alt"><td class="time">10:00–10:15</td><td class="title-cell">개회사</td><td class="speaker"><span class="spk-line"><span class="spk-name"><span>이</span><span>호</span><span>성</span></span>원장 (KRISS)</span><span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장 (KISTI)</span></td></tr>
+      <tr><th style="width:104px;">시간<span class="en">TIME</span></th><th>프로그램 / 발표<span class="en">PROGRAM</span></th><th style="width:236px;">연사<span class="en">SPEAKER</span></th></tr>
+      <tr><td class="time">09:00–10:00</td><td class="title-cell">등록<span class="en">Registration &amp; Welcome</span></td><td class="speaker"></td></tr>
+      <tr class="alt"><td class="time">10:00–10:15</td><td class="title-cell">개회사<span class="en">Opening Remarks</span></td><td class="speaker"><span class="spk-line"><span class="spk-name"><span>이</span><span>호</span><span>성</span></span>원장 (KRISS)</span><span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장 (KISTI)</span></td></tr>
 
-      <tr class="divider"><td colspan="2">총론 OVERVIEW</td><td class="chair">좌장 허명선 그룹장 (KRISS)</td></tr>
-      <tr><td class="time">10:15–10:30</td><td class="title-cell"><span class="tag">총론</span>공공재로서의 대한민국 표준시</td><td class="speaker">허명선 그룹장 (KRISS)</td></tr>
-      <tr class="alt"><td class="time">10:30–11:00</td><td class="title-cell"><span class="tag">총론</span>국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망</td><td class="speaker">조부승 센터장 (KISTI)</td></tr>
-      <tr><td class="time">11:00–11:30</td><td class="title-cell"><span class="tag">총론</span>AI-자동화 시대의 시간 비동기화 이슈와 국가안보</td><td class="speaker">윤정현 연구위원<br>(국가안보전략연구원)</td></tr>
-      <tr class="alt"><td class="time">11:30–12:00</td><td class="title-cell"><span class="tag">총론</span>불확실성의 시대, 강인한 시각 정보 확보의 중요성</td><td class="speaker">Neil Pitman<br>(Adtran/Oscilloquartz)</td></tr>
-      <tr><td class="time">12:00–13:30</td><td class="title-cell" style="color:var(--ink-soft);">사진촬영 및 오찬</td><td class="speaker"></td></tr>
+      <tr class="divider"><td colspan="2">총론 OVERVIEW</td><td class="chair">좌장 <span class="en">CHAIR</span> 허명선 그룹장 (KRISS)</td></tr>
+      <tr><td class="time">10:15–10:30</td><td class="title-cell"><span class="tag">총론</span>공공재로서의 대한민국 표준시<span class="en">Korea Standard Time as a Public Utility in Korea</span></td><td class="speaker">허명선 그룹장 (KRISS)</td></tr>
+      <tr class="alt"><td class="time">10:30–11:00</td><td class="title-cell"><span class="tag">총론</span>국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망<span class="en">Prospects for Time Synchronization Services over the National Research Network</span></td><td class="speaker">조부승 센터장 (KISTI)</td></tr>
+      <tr><td class="time">11:00–11:30</td><td class="title-cell"><span class="tag">총론</span>AI-자동화 시대의 시간 비동기화 이슈와 국가안보<span class="en">Time Desynchronization and National Security in the Era of AI and Automation</span></td><td class="speaker">윤정현 연구위원<br>(국가안보전략연구원)</td></tr>
+      <tr class="alt"><td class="time">11:30–12:00</td><td class="title-cell"><span class="tag">총론</span>불확실성의 시대, 강인한 시각 정보 확보의 중요성<span class="en">Importance of Resilient Timing in an Insecure World</span></td><td class="speaker">Neil Pitman<br>(Adtran/Oscilloquartz)</td></tr>
+      <tr><td class="time">12:00–13:30</td><td class="title-cell" style="color:var(--ink-soft);">사진촬영 및 오찬<span class="en">Photo Session &amp; Lunch</span></td><td class="speaker"></td></tr>
 
-      <tr class="divider"><td colspan="2">국가 기반시설과 시각동기 · TIMING AND THE NATIONAL INFRASTRUCTURES</td><td class="chair">좌장 조부승 센터장 (KISTI)</td></tr>
-      <tr class="alt"><td class="time">13:30–13:55</td><td class="title-cell">대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기</td><td class="speaker">김충효 책임연구원 (한국전력공사)</td></tr>
-      <tr><td class="time">13:55–14:20</td><td class="title-cell">지상파 항법에서의 시각동기</td><td class="speaker">서기열 책임연구원 (KRISO)</td></tr>
-      <tr class="alt"><td class="time">14:20–14:45</td><td class="title-cell">VLBI에서의 정밀시각주파수, KVN에서의 활용</td><td class="speaker">정태현 센터장 (KASI)</td></tr>
-      <tr><td class="time">14:45–15:10</td><td class="title-cell">양자 암호 통신의 시각 동기화</td><td class="speaker">염다현 수석연구원 (IDQ)</td></tr>
-      <tr class="alt"><td class="time">15:10–15:30</td><td class="title-cell" style="color:var(--ink-soft);">휴식</td><td class="speaker"></td></tr>
+      <tr class="divider"><td colspan="2">국가 기반시설과 시각동기 · TIMING AND THE NATIONAL INFRASTRUCTURES</td><td class="chair">좌장 <span class="en">CHAIR</span> 조부승 센터장 (KISTI)</td></tr>
+      <tr class="alt"><td class="time">13:30–13:55</td><td class="title-cell">대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기<span class="en">Linking the Power Grid to KST: Overcoming GPS Vulnerabilities through Network-Based Time Synchronization</span></td><td class="speaker">김충효 책임연구원 (한국전력공사)</td></tr>
+      <tr><td class="time">13:55–14:20</td><td class="title-cell">지상파 항법에서의 시각동기<span class="en">Timing in Terrestrial Radio Navigation</span></td><td class="speaker">서기열 책임연구원 (KRISO)</td></tr>
+      <tr class="alt"><td class="time">14:20–14:45</td><td class="title-cell">VLBI에서의 정밀시각주파수, KVN에서의 활용<span class="en">Precision Time and Frequency in VLBI: Applications in the Korean VLBI Network</span></td><td class="speaker">정태현 센터장 (KASI)</td></tr>
+      <tr><td class="time">14:45–15:10</td><td class="title-cell">양자 암호 통신의 시각 동기화<span class="en">Time Synchronization in Quantum Cryptography Communication</span></td><td class="speaker">염다현 수석연구원 (IDQ)</td></tr>
+      <tr class="alt"><td class="time">15:10–15:30</td><td class="title-cell" style="color:var(--ink-soft);">휴식<span class="en">Coffee Break</span></td><td class="speaker"></td></tr>
 
-      <tr class="divider"><td colspan="2">시각 솔루션 · TIMING SOLUTIONS</td><td class="chair">좌장 유대혁 단장 (KRISS)</td></tr>
-      <tr><td class="time">15:30–16:00</td><td class="title-cell"><span class="tag">총론</span>유럽의 광섬유 시각주파수 전송망 <span style="color:#FF9B7A;">(Online)</span></td><td class="speaker">Cecilia Clivati (INRiM)</td></tr>
-      <tr class="alt"><td class="time">16:00–16:30</td><td class="title-cell"><span class="tag">총론</span>상용 원자시계 및 타이밍 솔루션</td><td class="speaker">이인섭 이사 (Microchip)</td></tr>
-      <tr><td class="time">16:30–16:55</td><td class="title-cell">초정밀 시각주파수 국가망 구축방안</td><td class="speaker">김정대 상무 (Cisco)</td></tr>
-      <tr class="alt"><td class="time">16:55–17:20</td><td class="title-cell">광통신을 이용한 시각동기 솔루션</td><td class="speaker">이정호 대표 (이투비비)</td></tr>
-      <tr><td class="time">17:20–17:45</td><td class="title-cell">아시아에서의 시각 서비스</td><td class="speaker">염병국 팀장 (KTsat)</td></tr>
-      <tr class="alt"><td class="time">17:45</td><td class="title-cell" style="color:var(--ink-soft);">폐회</td><td class="speaker"></td></tr>
-      <tr class="note"><td colspan="3">* 세부 연사 및 프로그램은 사정에 따라 변경될 수 있습니다.</td></tr>
+      <tr class="divider"><td colspan="2">시각 솔루션 · TIMING SOLUTIONS</td><td class="chair">좌장 <span class="en">CHAIR</span> 유대혁 단장 (KRISS)</td></tr>
+      <tr><td class="time">15:30–16:00</td><td class="title-cell"><span class="tag">총론</span>유럽의 광섬유 시각주파수 전송망 <span style="color:#FF9B7A;">(Online)</span><span class="en">The European Fiber Network</span></td><td class="speaker">Cecilia Clivati (INRiM)</td></tr>
+      <tr class="alt"><td class="time">16:00–16:30</td><td class="title-cell"><span class="tag">총론</span>상용 원자시계 및 타이밍 솔루션<span class="en">Clocks and Timing Solutions</span></td><td class="speaker">이인섭 이사 (Microchip)</td></tr>
+      <tr><td class="time">16:30–16:55</td><td class="title-cell">초정밀 시각주파수 국가망 구축방안<span class="en">High-precision Timing in National Networks</span></td><td class="speaker">김정대 상무 (Cisco)</td></tr>
+      <tr class="alt"><td class="time">16:55–17:20</td><td class="title-cell">광통신을 이용한 시각동기 솔루션<span class="en">Time Synchronization Solutions using Optical Technology</span></td><td class="speaker">이정호 대표 (이투비비)</td></tr>
+      <tr><td class="time">17:20–17:45</td><td class="title-cell">아시아에서의 시각 서비스<span class="en">Time as a Service in Asia</span></td><td class="speaker">염병국 팀장 (KTsat)</td></tr>
+      <tr class="alt"><td class="time">17:45</td><td class="title-cell" style="color:var(--ink-soft);">폐회<span class="en">Closing</span></td><td class="speaker"></td></tr>
+      <tr class="note"><td colspan="3">* 세부 연사 및 프로그램은 사정에 따라 변경될 수 있습니다.<span class="en">* Speakers and programme details are subject to change.</span></td></tr>
     </table>
     </div>
 

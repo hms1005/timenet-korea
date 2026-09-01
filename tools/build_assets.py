@@ -15,6 +15,9 @@ CSS(여백·애니메이션 정지 등)를 입힌 사본을 임시 폴더에 만
     python3 tools/build_assets.py poster     # 포스터(다크+라이트) pdf+png+gif
     python3 tools/build_assets.py poster-dark   # 다크만
     python3 tools/build_assets.py poster-light  # 라이트만
+    python3 tools/build_assets.py poster-bi     # 다크 한영병기만
+    python3 tools/build_assets.py poster-light-bi  # 라이트 한영병기만
+    python3 tools/build_assets.py poster-bi-large  # 다크 한영병기 확대판만
 
 Pillow 필요: python3 -m pip install pillow
 """
@@ -40,13 +43,17 @@ PROGRAM = os.path.join(ROOT, 'timenet_program.html')
 POSTERS = [
     {'key': 'poster',       'name': 'timenet_korea_poster_Hyun_dark',  'page': '#05070d'},
     {'key': 'poster_light', 'name': 'timenet_korea_poster_Hyun_light', 'page': '#F8F7F4'},
+    {'key': 'poster_bi',    'name': 'timenet_korea_poster_Hyun_dark_bilingual', 'page': '#05070d'},
+    {'key': 'poster_light_bi', 'name': 'timenet_korea_poster_Hyun_light_bilingual', 'page': '#F8F7F4'},
+    # 인쇄용 확대판. 내용은 다크 병기판과 같고 글자만 키웠다(tools/fit_large.py 참고).
+    {'key': 'poster_bi_large', 'name': 'timenet_korea_poster_Hyun_dark_bilingual_large', 'page': '#05070d'},
 ]
 for _p in POSTERS:
     _p['src'] = os.path.join(ROOT, _p['name'] + '.html')
 POSTER = POSTERS[0]['src']          # 대조(check) 기준은 다크 포스터
 
 PROGRAM_W = 1000          # 렌더 폭(px). 화면용 여백은 아래 CSS 로 넓힌다.
-POSTER_W  = 920           # .poster 고정 폭
+POSTER_W  = 920           # --poster-w 가 없는 옛 포스터의 기본 폭
 GIF_LOOP  = 6.0           # GIF 한 바퀴(초)
 GIF_N     = 30            # 프레임 수 -> 200ms/프레임
 GIF_SCALE = 1             # GIF 배율(웹 공유용, 인쇄용 아님)
@@ -104,6 +111,13 @@ def screenshot(src, dst, w, h, scale=2, timeout=25):
 def pdf_pages(path):
     d = io.open(path, 'rb').read()
     return d.count(b'/Type /Page') - d.count(b'/Type /Pages')
+
+
+def poster_width(path):
+    """포스터마다 폭이 다르다. A0 비율을 쓰는 포스터는 --poster-w 로 폭을 선언하고,
+    높이는 aspect-ratio 가 정한다. 선언이 없으면 옛 고정 폭을 쓴다."""
+    m = re.search(r'--poster-w\s*:\s*(\d+)px', io.open(path, encoding='utf-8').read())
+    return int(m.group(1)) if m else POSTER_W
 
 
 def print_pdf(src, dst, w, h):
@@ -279,17 +293,18 @@ def build_program():
 
 def build_poster(poster):
     src = dress(poster['src'], poster_css(poster['page']), FREEZE)
-    w, h = measure(src, POSTER_W + 40, selector='.poster')
+    pw = poster_width(poster['src'])
+    w, h = measure(src, pw + 40, selector='.poster')
     base = os.path.join(ROOT, poster['name'])
     png, pdf, gif = base + '.png', base + '.pdf', base + '.gif'
-    screenshot(src, png, POSTER_W, h, scale=2)
-    used = print_pdf(src, pdf, POSTER_W, h)
-    build_gif(poster, POSTER_W, h, gif)
+    screenshot(src, png, w, h, scale=2)
+    used = print_pdf(src, pdf, w, h)
+    build_gif(poster, w, h, gif)
     tag = poster['name'].replace('timenet_korea_poster_Hyun', '...')
-    print('  %s.png  %dx%d (2x)  %.1f KB' % (tag, POSTER_W * 2, h * 2, os.path.getsize(png) / 1024))
-    print('  %s.pdf  1p %dx%dpx  %.1f KB' % (tag, POSTER_W, used, os.path.getsize(pdf) / 1024))
+    print('  %s.png  %dx%d (2x)  %.1f KB' % (tag, w * 2, h * 2, os.path.getsize(png) / 1024))
+    print('  %s.pdf  1p %dx%dpx (1:%.4f)  %.1f KB' % (tag, w, used, used / float(w), os.path.getsize(pdf) / 1024))
     print('  %s.gif  %dx%d %d프레임 %.0f초 루프  %.1f KB'
-          % (tag, POSTER_W * GIF_SCALE, h * GIF_SCALE, GIF_N, GIF_LOOP, os.path.getsize(gif) / 1024))
+          % (tag, w * GIF_SCALE, h * GIF_SCALE, GIF_N, GIF_LOOP, os.path.getsize(gif) / 1024))
 
 
 STAMP = os.path.join(ROOT, 'tools', '.build-stamp')
@@ -300,23 +315,32 @@ def digest(path):
     return hashlib.md5(io.open(path, 'rb').read()).hexdigest()
 
 
-def stale():
-    """마지막 빌드 이후 내용이 바뀐 소스를 돌려준다."""
+def read_stamp():
     prev = {}
     if os.path.exists(STAMP):
         for line in io.open(STAMP, encoding='utf-8'):
             if ' ' in line:
                 h, n = line.strip().split(' ', 1)
                 prev[n] = h
+    return prev
+
+
+def stale():
+    """마지막 빌드 이후 내용이 바뀐 소스를 돌려준다."""
+    prev = read_stamp()
     now = {'program': digest(PROGRAM)}
     for p in POSTERS:
         now[p['key']] = digest(p['src'])
     return [k for k, v in now.items() if prev.get(k) != v], now
 
 
-def write_stamp(now):
+def write_stamp(now, built):
+    """이번에 실제로 다시 만든 것만 갱신한다. 전부 덮어쓰면 poster-bi 처럼
+    일부만 렌더했을 때 나머지가 최신인 것처럼 기록돼 auto 가 건너뛴다."""
+    merged = read_stamp()
+    merged.update({k: v for k, v in now.items() if k in built})
     io.open(STAMP, 'w', encoding='utf-8').write(
-        ''.join('%s %s\n' % (v, k) for k, v in sorted(now.items())))
+        ''.join('%s %s\n' % (v, k) for k, v in sorted(merged.items())))
 
 
 def main():
@@ -324,6 +348,7 @@ def main():
         raise SystemExit('Chrome 을 찾을 수 없습니다: ' + CHROME)
     os.makedirs(BUILD, exist_ok=True)
     what = sys.argv[1] if len(sys.argv) > 1 else 'all'
+    built = set()
 
     if what == 'auto':
         todo, now = stale()
@@ -340,7 +365,7 @@ def main():
                 print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
                       % p['name'].replace('timenet_korea_poster_Hyun_', ''))
                 build_poster(p)
-        write_stamp(now)
+        write_stamp(now, todo)
         return
 
     if what in ('all', 'check'):
@@ -350,17 +375,21 @@ def main():
     if what in ('all', 'program'):
         print('프로그램 렌더링...')
         build_program()
-    if what in ('all', 'poster', 'poster-dark', 'poster-light'):
-        want = {'poster-dark': ['poster'], 'poster-light': ['poster_light']}.get(
-            what, [p['key'] for p in POSTERS])
+        built.add('program')
+    if what in ('all', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large'):
+        want = {'poster-dark': ['poster'], 'poster-light': ['poster_light'],
+                'poster-bi': ['poster_bi'],
+                'poster-light-bi': ['poster_light_bi'],
+                'poster-bi-large': ['poster_bi_large']}.get(what, [p['key'] for p in POSTERS])
         for p in POSTERS:
             if p['key'] in want:
                 print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
                       % p['name'].replace('timenet_korea_poster_Hyun_', ''))
                 build_poster(p)
-    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light'):
+                built.add(p['key'])
+    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large'):
         _, now = stale()
-        write_stamp(now)
+        write_stamp(now, built)
 
 
 if __name__ == '__main__':

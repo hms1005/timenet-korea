@@ -20,8 +20,8 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 |---|---|---|
 | `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 29.) | 홈페이지에서 링크해 사용 중 |
 | `timenet_background_toggle.html` | 추진배경 및 목표 (국문/영문 토글) | 미사용 — 아래 참고 |
-| `timenet_korea_poster_Hyun_dark.html` | 행사 포스터 (다크) — 배포 자산의 원본 | 홍보용 PDF/PNG/GIF 로 출력 |
-| `timenet_korea_poster_Hyun_light.html` | 행사 포스터 (라이트) | 인쇄용 PDF/PNG/GIF 로 출력 |
+| `timenet_korea_poster_Hyun_dark_bilingual_large.html` | 행사 포스터 (다크, 국·영문 병기) | 홍보용 PDF/PNG/GIF 로 출력 |
+| `timenet_korea_poster_Hyun_light_bilingual_large.html` | 행사 포스터 (라이트, 국·영문 병기) | 인쇄용 PDF/PNG/GIF 로 출력 |
 | `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |
 
 `timenet_background_toggle.html`은 현재 행사 홈페이지에서 사용하지 않습니다.
@@ -106,15 +106,15 @@ python3 tools/build_assets.py auto     # 내용이 바뀐 것만 다시 렌더 (
 python3 tools/build_assets.py check    # 프로그램 <-> 포스터 대조만
 python3 tools/build_assets.py program  # 프로그램 PDF+PNG 만
 python3 tools/build_assets.py poster   # 포스터 PDF+PNG+GIF (다크+라이트)
-python3 tools/build_assets.py poster-dark    # 다크만
-python3 tools/build_assets.py poster-light   # 라이트만
+python3 tools/build_assets.py poster-dark    # 다크 확대판만
+python3 tools/build_assets.py poster-light   # 라이트 확대판만
 ```
 
 | 원본 | 만들어지는 파일 |
 |---|---|
 | `timenet_program.html` | `timenet_program.pdf` (1페이지), `timenet_program.png` (2x) |
-| `timenet_korea_poster_Hyun_dark.html` | `..._dark.pdf` (1페이지), `..._dark.png` (2x), `..._dark.gif` (30프레임 6초 루프) |
-| `timenet_korea_poster_Hyun_light.html` | `..._light.pdf` / `.png` / `.gif` (다크와 같은 규격) |
+| `timenet_korea_poster_Hyun_dark_bilingual_large.html` | 같은 이름의 `.pdf` (1페이지), `.png` (2x), `.gif` (30프레임 6초 루프) |
+| `timenet_korea_poster_Hyun_light_bilingual_large.html` | 같은 이름의 `.pdf` / `.png` / `.gif` (다크와 같은 규격) |
 
 **HTML 원본은 건드리지 않습니다.** 출력 전용 CSS(여백 확보, 애니메이션 정지, 배경색 강제)를
 입힌 사본을 임시 폴더에 만들어 캡처하는 방식이라, 화면용 스타일과 문서용 스타일이 서로
@@ -122,8 +122,9 @@ python3 tools/build_assets.py poster-light   # 라이트만
 
 몇 가지 알아 둘 점:
 
-- **`check` 는 시간과 연사만 대조합니다.** 포스터는 표가 좁아 제목을 줄여 쓰기 때문에
-  제목까지 비교하면 매번 걸립니다. 시간·연사가 어긋나면 그건 실수이므로 여기서 잡습니다.
+- **`check` 는 시간·국문 제목·영문 제목·연사를 모두 대조합니다.** 프로그램만 고치고 포스터를
+  잊는 일이 실제로 있어 제목까지 봅니다. 포스터가 지면 때문에 일부러 줄여 쓰는 자리는
+  스크립트의 `ALLOWED` 에 이유와 함께 적어 두고 예외로 넘깁니다.
 - **`auto` 는 `tools/.build-stamp` 의 해시로 변경을 판단합니다.** 이 파일도 함께 커밋해야
   다음에 받아 쓸 때 헛돌지 않습니다.
 - **GIF 는 포스터 배경의 광섬유 애니메이션을 프레임 단위로 얼려 캡처합니다.** 원본은 주기가
@@ -132,7 +133,10 @@ python3 tools/build_assets.py poster-light   # 라이트만
   (`gif_frame_css`)도 같이 확인하세요.
 - **포스터 렌더는 GIF 30프레임 때문에 1~2분 걸립니다.** 프로그램만 고쳤으면 `auto` 가
   프로그램만 다시 만들므로 몇 초면 끝납니다.
-- **포스터는 다크·라이트 두 벌을 같은 규격으로 만듭니다.** 스크립트의 `POSTERS` 목록에
+- **포스터는 국·영문 병기 인쇄용 확대판 두 벌(다크·라이트)만 씁니다.** 글자 배율은
+  `tools/fit_large.py` 가 정하므로, 표 내용을 고쳤으면 그것부터 돌립니다.
+  구판(병기 아님 / 확대 아님)은 `old/` 로 옮겨 두었고 저장소에는 올리지 않습니다.
+  스크립트의 `POSTERS` 목록에
   정의돼 있고, `auto` 는 둘을 따로 추적해 바뀐 쪽만 다시 렌더합니다. 둘 다 바뀌면 GIF 를
   두 번 굽느라 3~4분 걸립니다.
 - `page` 값은 포스터 바깥에 깔리는 색입니다. 캡처가 1px 어긋나도 반대색 테두리가 비치지
@@ -147,8 +151,8 @@ python3 tools/build_assets.py poster-light   # 라이트만
 `timenet_program.html` 의 시간·연사·제목을 손댔으면 다크·라이트 포스터의
 `<table class="prog">` 에서 같은 행을 찾아 함께 고친 뒤 `check` 로 확인합니다.
 
-포스터 표에는 분야 태그(`총론/정책` 등)와 영문 제목이 없습니다. 태그와 영문만 바뀐 수정이면
-포스터는 그대로 두어도 됩니다.
+포스터 표에도 영문 제목이 함께 들어갑니다(`<span class="en">`). 분야 태그는 포스터에서
+`총론` 표시로만 쓰므로, 소분류만 바뀐 수정이면 포스터는 그대로 두어도 됩니다.
 
 ## 기관 로고 넣기 (.ai -> 벡터)
 
@@ -186,7 +190,7 @@ pdftocairo -png -r 600 -transp -singlefile 로고.ai out   # 확인용 래스터
 투명도 때문에 하나당 `/Image` + `/SMask` 로 2개씩 늘어납니다.
 
 ```bash
-python3 -c "import re;d=open('timenet_korea_poster_Hyun_dark.pdf','rb').read();print(len(re.findall(rb'/Subtype\s*/Image',d)))"
+python3 -c "import re;d=open('timenet_korea_poster_Hyun_dark_bilingual_large.pdf','rb').read();print(len(re.findall(rb'/Subtype\s*/Image',d)))"
 ```
 
 기관 CI 원본 묶음은 `.gitignore` 로 제외했습니다. 공개 저장소이고, 포스터에는 필요한 로고가

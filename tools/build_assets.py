@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Time-Net Korea 2026 배포 자산 빌드.
 
-  timenet_program.html            -> timenet_program.pdf / .png
-  timenet_korea_poster_Hyun_dark.html  -> ..._dark.pdf / .png / .gif
-  timenet_korea_poster_Hyun_light.html -> ..._light.pdf / .png / .gif
+  timenet_program.html -> timenet_program.pdf / .png
+  timenet_korea_poster_Hyun_{dark,light}_bilingual_large.html
+                       -> ....pdf / .png / .gif
+
+포스터는 국·영문 병기 인쇄용 확대판 두 벌(다크·라이트)만 쓴다. 글자 배율은
+tools/fit_large.py 가 정하므로, 표 내용을 고쳤으면 그것부터 돌릴 것.
 
 headless Chrome 으로 렌더링한다. 원본 HTML 은 건드리지 않고, 출력 전용
 CSS(여백·애니메이션 정지 등)를 입힌 사본을 임시 폴더에 만들어 캡처한다.
@@ -12,13 +15,9 @@ CSS(여백·애니메이션 정지 등)를 입힌 사본을 임시 폴더에 만
     python3 tools/build_assets.py auto       # 소스가 바뀐 것만 다시 렌더
     python3 tools/build_assets.py check      # 프로그램 <-> 포스터 대조만
     python3 tools/build_assets.py program    # 프로그램 pdf+png 만
-    python3 tools/build_assets.py poster     # 포스터(다크+라이트) pdf+png+gif
-    python3 tools/build_assets.py poster-dark   # 다크만
-    python3 tools/build_assets.py poster-light  # 라이트만
-    python3 tools/build_assets.py poster-bi     # 다크 한영병기만
-    python3 tools/build_assets.py poster-light-bi  # 라이트 한영병기만
-    python3 tools/build_assets.py poster-bi-large  # 다크 한영병기 확대판만
-    python3 tools/build_assets.py poster-light-bi-large  # 라이트 한영병기 확대판만
+    python3 tools/build_assets.py poster     # 포스터 두 벌 pdf+png+gif
+    python3 tools/build_assets.py poster-dark    # 다크 확대판만
+    python3 tools/build_assets.py poster-light   # 라이트 확대판만
 
 Pillow 필요: python3 -m pip install pillow
 """
@@ -42,12 +41,7 @@ PROGRAM = os.path.join(ROOT, 'timenet_program.html')
 # 다크·라이트 두 벌을 같은 방식으로 뽑는다. page 는 포스터 바깥 여백에 깔리는 색으로,
 # 캡처가 1px 어긋나도 반대색 테두리가 비치지 않게 각 포스터의 바탕에 맞춘다.
 POSTERS = [
-    {'key': 'poster',       'name': 'timenet_korea_poster_Hyun_dark',  'page': '#05070d'},
-    {'key': 'poster_light', 'name': 'timenet_korea_poster_Hyun_light', 'page': '#F8F7F4'},
-    {'key': 'poster_bi',    'name': 'timenet_korea_poster_Hyun_dark_bilingual', 'page': '#05070d'},
-    {'key': 'poster_light_bi', 'name': 'timenet_korea_poster_Hyun_light_bilingual', 'page': '#F8F7F4'},
-    # 인쇄용 확대판. 내용은 병기판과 같고 글자만 키웠다(tools/fit_large.py 참고).
-    {'key': 'poster_bi_large', 'name': 'timenet_korea_poster_Hyun_dark_bilingual_large', 'page': '#05070d'},
+    {'key': 'poster_bi_large',       'name': 'timenet_korea_poster_Hyun_dark_bilingual_large',  'page': '#05070d'},
     {'key': 'poster_light_bi_large', 'name': 'timenet_korea_poster_Hyun_light_bilingual_large', 'page': '#F8F7F4'},
 ]
 for _p in POSTERS:
@@ -237,55 +231,102 @@ def build_gif(poster, w, h, dst):
 # --------------------------------------------------------------------------
 # 프로그램 <-> 포스터 대조
 
-def rows(path, table_start, cell_re):
+def _txt(x):
+    """태그를 걷어내고 공백을 정리한 알맹이 글자."""
+    return re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', x))).strip()
+
+
+def _norm(x):
+    """대조용 정규화. 공백·대소문자·따옴표 차이는 무시한다."""
+    return re.sub(r'\s+', '', x).replace('\u2019', "'").lower()
+
+
+# 포스터가 프로그램과 일부러 다르게 쓰는 자리. 지면이 좁아 줄여 쓴 것들이라
+# 불일치로 보지 않는다. 새로 예외를 넣을 때는 이유를 함께 적을 것.
+ALLOWED = {
+    ('14:20\u201314:45', 'en'):
+        '포스터는 지면상 Very Long Baseline Interferometry 를 VLBI 로 줄여 쓴다',
+}
+
+
+def program_rows():
+    """프로그램 표 -> {시간: (국문, 영문, 연사)}"""
+    s = io.open(PROGRAM, encoding='utf-8').read()
+    s = re.sub(r'<!--.*?-->', '', s[s.index('<tbody>'):], flags=re.S)
+    body = s[:s.index('</tbody>')]
+    out = {}
+    for tr in re.findall(r'<tr\b[^>]*>.*?</tr>', body, re.S):
+        t = re.search(r'class="time">(.*?)</td>', tr, re.S)
+        if not t:
+            continue        # 세션 구분행 등
+        ko = re.search(r'class="t-ko">(.*?)</span>\s*<span class="t-en"', tr, re.S)
+        en = re.search(r'class="t-en">(.*?)</span>\s*</td>', tr, re.S)
+        # 분야 태그(총론/네트워크)와 online 표시는 포스터에서 다른 방식으로 쓴다
+        drop = r'<span class="(field|field-en|cer-tag|plenary-tag)">.*?</span>'
+        ko = _txt(re.sub(drop, '', ko.group(1), flags=re.S)) if ko else ''
+        en = _txt(re.sub(drop, '', en.group(1), flags=re.S)) if en else ''
+        sp = re.search(r'class="speaker">(.*?)</td>', tr, re.S)
+        out[_txt(t.group(1))] = (ko, en, _txt(sp.group(1)) if sp else '')
+    return out
+
+
+def poster_rows(path):
+    """포스터 표 -> {시간: (국문, 영문, 연사)}"""
     s = io.open(path, encoding='utf-8').read()
-    s = re.sub(r'<!--.*?-->', '', s[s.index(table_start):], flags=re.S)
-    body = s[:s.index('</table>') if '</table>' in s else len(s)]
-    out = []
-    for tr in re.findall(r'<tr\b.*?</tr>', body, re.S):
-        cells = [re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', c))).strip()
-                 for c in re.findall(cell_re, tr, re.S)]
-        if cells:
-            out.append(cells)
+    s = re.sub(r'<!--.*?-->', '', s[s.index('<table class="prog">'):], flags=re.S)
+    body = s[:s.index('</table>')]
+    out = {}
+    for tr in re.findall(r'<tr\b[^>]*>.*?</tr>', body, re.S):
+        t = re.search(r'class="time">(.*?)</td>', tr, re.S)
+        if not t:
+            continue
+        cell = re.search(r'class="title-cell"[^>]*>(.*?)</td>', tr, re.S)
+        cell = cell.group(1) if cell else ''
+        en = re.search(r'<span class="en">(.*?)</span>', cell, re.S)
+        en = _txt(en.group(1)) if en else ''
+        ko = _txt(re.sub(r'<span class="(en|tag)">.*?</span>', '', cell, flags=re.S))
+        ko = re.sub(r'\s*\(online\)\s*$', '', ko, flags=re.I)   # 프로그램은 태그로 따로 붙인다
+        sp = re.search(r'class="speaker">(.*?)</td>', tr, re.S)
+        out[_txt(t.group(1))] = (ko, en, _txt(sp.group(1)) if sp else '')
     return out
 
 
 def check():
-    """시간·연사만 대조한다. 제목은 포스터가 줄여 쓰므로 비교하지 않는다."""
+    """시간·국문 제목·영문 제목·연사를 모두 대조한다.
+
+    제목까지 보는 이유: 프로그램만 고치고 포스터를 잊는 일이 실제로 있었다.
+    포스터가 일부러 줄여 쓰는 자리는 ALLOWED 에 이유와 함께 적어 둔다."""
     return all([check_one(p) for p in POSTERS])
 
 
 def check_one(poster):
-    prog = rows(PROGRAM, '<tbody>', r'<td\b[^>]*>(.*?)</td>')
-    post = rows(poster['src'], '<table class="prog">', r'<t[dh]\b[^>]*>(.*?)</t[dh]>')
-
-    def keyed(rs):
-        d = {}
-        for r in rs:
-            if r and re.match(r'^\d{2}:\d{2}', r[0]):
-                d[r[0]] = r[-1] if len(r) >= 3 else ''
-        return d
-
-    a, b = keyed(prog), keyed(post)
-    problems = []
+    a, b = program_rows(), poster_rows(poster['src'])
+    label = poster['name'].replace('timenet_korea_poster_Hyun_', '')
+    field = {0: '국문', 1: '영문', 2: '연사'}
+    problems, skipped = [], 0
     for t in sorted(set(a) | set(b)):
         if t not in a:
             problems.append('%s  포스터에만 있음' % t)
-        elif t not in b:
+            continue
+        if t not in b:
             problems.append('%s  프로그램에만 있음' % t)
-        else:
-            pa = a[t].replace('개회 ', '').replace(' ', '')
-            pb = b[t].replace(' ', '')
-            # 개회사 두 줄은 프로그램 쪽이 이름 정렬용 마크업이라 공백만 다르다
-            if pa != pb:
-                problems.append('%s  프로그램 "%s"  <->  포스터 "%s"' % (t, a[t], b[t]))
-    label = poster['name'].replace('timenet_korea_poster_Hyun_', '')
+            continue
+        for i in (0, 1, 2):
+            key = (t, ('ko', 'en', 'spk')[i])
+            if _norm(a[t][i]) == _norm(b[t][i]):
+                continue
+            if key in ALLOWED:
+                skipped += 1
+                continue
+            problems.append('%s [%s]\n      프로그램: %s\n      포 스 터: %s'
+                            % (t, field[i], a[t][i], b[t][i]))
     if problems:
-        print('연사/시간 불일치 (%s):' % label)
-        for p in problems:
-            print('  - ' + p)
+        print('불일치 (%s):' % label)
+        for x in problems:
+            print('  - ' + x)
     else:
-        print('연사/시간: 프로그램 <-> 포스터(%s) 일치 (%d행)' % (label, len(a)))
+        print('프로그램 <-> 포스터(%s) 일치 (%d행%s)'
+              % (label, len(a), ', 의도된 예외 %d건' % skipped if skipped else ''))
     return not problems
 
 
@@ -387,19 +428,16 @@ def main():
         print('프로그램 렌더링...')
         build_program()
         built.add('program')
-    if what in ('all', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large', 'poster-light-bi-large'):
-        want = {'poster-dark': ['poster'], 'poster-light': ['poster_light'],
-                'poster-bi': ['poster_bi'],
-                'poster-light-bi': ['poster_light_bi'],
-                'poster-bi-large': ['poster_bi_large'],
-                'poster-light-bi-large': ['poster_light_bi_large']}.get(what, [p['key'] for p in POSTERS])
+    if what in ('all', 'poster', 'poster-dark', 'poster-light'):
+        want = {'poster-dark': ['poster_bi_large'],
+                'poster-light': ['poster_light_bi_large']}.get(what, [p['key'] for p in POSTERS])
         for p in POSTERS:
             if p['key'] in want:
                 print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
                       % p['name'].replace('timenet_korea_poster_Hyun_', ''))
                 build_poster(p)
                 built.add(p['key'])
-    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light', 'poster-bi', 'poster-light-bi', 'poster-bi-large', 'poster-light-bi-large'):
+    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light'):
         _, now = stale()
         write_stamp(now, built)
 

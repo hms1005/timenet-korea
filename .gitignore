@@ -23,3 +23,6 @@ __pycache__/
 한국표준과학연구원CI.zip
 kisti_ai/
 kisti_ai.zip
+
+# 쓰지 않게 된 구판 포스터 보관용 (로컬만)
+old/

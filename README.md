@@ -10,6 +10,9 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 - 홈페이지의 프로그램 부분에서 링크하고 있는 주소:
   https://hms1005.github.io/timenet-korea/timenet_program.html
 
+이 주소를 홈페이지에서 직접 링크하고 있으므로 **`timenet_program.html` 파일명은 바꾸지 않습니다.**
+(포스터 파일들은 2026-09-03에 `timenet2026_poster_*` 로 정리했지만, 이 파일만 예외로 둡니다.)
+
 즉 GitHub Pages를 활용하되, 홈페이지에서 실제로 링크하고 있는 것은 위의 프로그램 페이지 하나뿐입니다.
 저장소 최상위 주소(https://hms1005.github.io/timenet-korea/)는 사용하지 않습니다.
 `index.html`을 두지 않았으므로 이 주소는 열리지 않습니다.
@@ -18,10 +21,10 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 
 | 파일 | 내용 | 사용 여부 |
 |---|---|---|
-| `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 29.) | 홈페이지에서 링크해 사용 중 |
+| `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 29.) | 홈페이지에서 링크해 사용 중 — 이름 고정 |
 | `timenet_background_toggle.html` | 추진배경 및 목표 (국문/영문 토글) | 미사용 — 아래 참고 |
-| `timenet_korea_poster_Hyun_dark_bilingual_large.html` | 행사 포스터 (다크, 국·영문 병기) | 홍보용 PDF/PNG/GIF 로 출력 |
-| `timenet_korea_poster_Hyun_light_bilingual_large.html` | 행사 포스터 (라이트, 국·영문 병기) | 인쇄용 PDF/PNG/GIF 로 출력 |
+| `timenet2026_poster_schedule.html` | 행사 포스터 — 전체 시간표 판 (다크, 한글 전용) | 홍보·인쇄용 PDF/PNG/GIF 로 출력 |
+| `timenet2026_poster_summary.svg` | 행사 포스터 — 요약 판 (세션 단위) | Inkscape 로 편집, PDF/PNG 동봉 |
 | `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |
 
 `timenet_background_toggle.html`은 현재 행사 홈페이지에서 사용하지 않습니다.
@@ -107,14 +110,16 @@ python3 tools/build_assets.py check    # 프로그램 <-> 포스터 대조만
 python3 tools/build_assets.py program  # 프로그램 PDF+PNG 만
 python3 tools/build_assets.py poster   # 포스터 PDF+PNG+GIF (다크+라이트)
 python3 tools/build_assets.py poster-dark    # 다크 확대판만
-python3 tools/build_assets.py poster-light   # 라이트 확대판만
+python3 tools/build_assets.py poster         # 포스터만
 ```
 
 | 원본 | 만들어지는 파일 |
 |---|---|
-| `timenet_program.html` | `timenet_program.pdf` (1페이지), `timenet_program.png` (2x) |
-| `timenet_korea_poster_Hyun_dark_bilingual_large.html` | 같은 이름의 `.pdf` (1페이지), `.png` (2x), `.gif` (30프레임 6초 루프) |
-| `timenet_korea_poster_Hyun_light_bilingual_large.html` | 같은 이름의 `.pdf` / `.png` / `.gif` (다크와 같은 규격) |
+| `timenet_program.html` | `timenet_program.pdf` (1페이지), `.png` (2x) |
+| `timenet2026_poster_schedule.html` | 같은 이름의 `.pdf` (1페이지), `.png` (2x), `.gif` (30프레임 6초 루프) |
+
+요약 판 `timenet2026_poster_summary.svg` 는 이 스크립트가 다루지 않습니다. Inkscape 로 편집하고
+PDF/PNG 는 따로 뽑습니다.
 
 **HTML 원본은 건드리지 않습니다.** 출력 전용 CSS(여백 확보, 애니메이션 정지, 배경색 강제)를
 입힌 사본을 임시 폴더에 만들어 캡처하는 방식이라, 화면용 스타일과 문서용 스타일이 서로
@@ -148,10 +153,12 @@ python3 tools/build_assets.py poster-light   # 라이트 확대판만
 ## 프로그램을 고치면 포스터도 같이 고칩니다
 
 프로그램표와 포스터는 같은 내용을 두 벌로 들고 있습니다. 한쪽만 고치면 곧바로 어긋나므로,
-`timenet_program.html` 의 시간·연사·제목을 손댔으면 다크·라이트 포스터의
+`timenet_program.html` 의 시간·연사·제목을 손댔으면 포스터의
 `<table class="prog">` 에서 같은 행을 찾아 함께 고친 뒤 `check` 로 확인합니다.
+요약 판 SVG 도 같은 내용을 들고 있으니 함께 봐야 합니다.
 
-포스터 표에도 영문 제목이 함께 들어갑니다(`<span class="en">`). 분야 태그는 포스터에서
+포스터는 한글만 싣습니다. 해외 연사 발표는 국문 없이 영문 제목만 쓰며(`<span class="en-only">`),
+`check` 는 이렇게 한쪽을 비워 둔 자리를 의도된 예외로 넘깁니다. 분야 태그는 포스터에서
 `총론` 표시로만 쓰므로, 소분류만 바뀐 수정이면 포스터는 그대로 두어도 됩니다.
 
 ## 기관 로고 넣기 (.ai -> 벡터)
@@ -190,7 +197,7 @@ pdftocairo -png -r 600 -transp -singlefile 로고.ai out   # 확인용 래스터
 투명도 때문에 하나당 `/Image` + `/SMask` 로 2개씩 늘어납니다.
 
 ```bash
-python3 -c "import re;d=open('timenet_korea_poster_Hyun_dark_bilingual_large.pdf','rb').read();print(len(re.findall(rb'/Subtype\s*/Image',d)))"
+python3 -c "import re;d=open('timenet2026_poster_schedule.pdf','rb').read();print(len(re.findall(rb'/Subtype\s*/Image',d)))"
 ```
 
 기관 CI 원본 묶음은 `.gitignore` 로 제외했습니다. 공개 저장소이고, 포스터에는 필요한 로고가

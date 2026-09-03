@@ -1,5 +1,7 @@
 # 이미지 파일 제외
 Gemini_Generated_Image_youm60youm60youm.png
+poster_sample1.jpeg
+poster_sample2.jpeg
 
 # macOS
 .DS_Store
@@ -23,6 +25,9 @@ __pycache__/
 한국표준과학연구원CI.zip
 kisti_ai/
 kisti_ai.zip
+kisti_png/
+kisti_png.zip
+한국표준과학연구원CI\ /
 
 # 쓰지 않게 된 구판 포스터 보관용 (로컬만)
 old/

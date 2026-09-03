@@ -11,11 +11,16 @@
     --ink:#F3F4F7; --ink-soft:rgba(255,255,255,.66);
     --paper:#0E1526; --line:rgba(255,255,255,.14); --row-alt:rgba(255,255,255,.04);
     --orange:#FF8200; --red:#DA2128;
-    --poster-w:1260px;   /* 병기판은 표가 두 줄이라 더 높다. A0 상자를 그만큼 키워 담는다 */
+    --poster-w:1380px;   /* 긴 제목(조부승 센터장)이 한 줄에 들어가도록 넓혔다.
+                            글자 크기는 px 고정이라 폭을 키우면 한 줄에 더 들어간다 */
     /* 인쇄용 확대판: 모든 font-size 를 --s 배로 키운다. 값은
        `python3 tools/fit_large.py` 가 "A0 상자 안에 들어가는 최대치"로
        정해 써 넣는다. 표 내용을 고쳤으면 그 스크립트를 다시 돌릴 것. */
     --s:1.162;
+    --wm:1.478;
+    --t:1.705;
+    --dv:32.1px;
+    --rp:7.28px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{background:#05070d;}
@@ -75,11 +80,16 @@
             flex:1; min-width:0; display:flex; flex-direction:column; }
 
 
-  .hero{ position:relative; text-align:center; margin-bottom:6px; }
+  .hero{ position:relative; text-align:center; margin-bottom:2px; }
+  .organizers{ display:flex; align-items:center; justify-content:center;
+               gap:calc(14px * var(--s)); margin-bottom:calc(8px * var(--s)); }
+  .organizers .lbl{ font-family:'IBM Plex Mono',monospace; font-size:calc(11.5px * var(--s));
+                    letter-spacing:.18em; color:var(--ink-soft); }
   .hero-logo-row{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:4px; }
-  .hero-icon{ height:70px; width:auto; flex:none; filter:drop-shadow(0 0 18px rgba(255,130,0,.35)); }
+  .hero-icon{ height:calc(46px * var(--s) * var(--wm) * 1.31); width:auto; flex:none; filter:drop-shadow(0 0 18px rgba(255,130,0,.35)); }
   .wordmark-text{
-    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:calc(46px * var(--s)); line-height:1;
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:calc(46px * var(--s) * var(--wm)); line-height:1;
     letter-spacing:-.01em; color:var(--ink); white-space:nowrap;
   }
   .wordmark-text .year-inline{
@@ -87,27 +97,29 @@
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
   .subtitle{
-    margin-top:10px; font-family:'Space Grotesk',sans-serif; font-size:calc(15.5px * var(--s)); font-weight:500;
+    margin-top:7px; font-family:'Space Grotesk',sans-serif; font-size:calc(31px * var(--s)); font-weight:500;
     color:var(--red); letter-spacing:.055em;
   }
-  .accent-bar{ width:64px; height:3px; margin:9px auto 11px; border-radius:4px; background:linear-gradient(90deg, var(--orange), var(--red)); }
+  .accent-bar{ width:64px; height:3px; margin:6px auto 7px; border-radius:4px; background:linear-gradient(90deg, var(--orange), var(--red)); }
 
   .hero-banner{
     position:relative; margin:6px auto 0; max-width:none;
   }
-  .hero-banner svg{ display:block; width:100%; max-width:664px; height:auto; margin:0 auto; }
+  .hero-banner svg{ display:block; width:100%; max-width:780px; height:auto; margin:0 auto; }
   .hero-banner-caption{
     padding:3px 20px 0; text-align:center; font-family:'IBM Plex Mono',monospace;
-    font-size:calc(10px * var(--s)); letter-spacing:.12em; color:var(--ink-soft);
+    font-size:calc(13.5px * var(--s)); letter-spacing:.03em; color:var(--ink-soft);
   }
   .hero-banner-caption b{ color:#FF8200; font-weight:600; }
 
-  .pass-card{
-    display:inline-block; margin:0 auto; padding:10px 24px; border-radius:12px;
-    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); box-shadow:0 10px 26px -12px rgba(0,0,0,.35);
+  .eventmeta{
+    flex:0 1 auto; min-width:0; display:flex; align-items:center; justify-content:center;
+    gap:calc(var(--dv) * .85); font-size:var(--dv); font-weight:700; color:var(--ink);
+    white-space:nowrap; line-height:1.2;
   }
-  .datevenue{ font-size:calc(17px * var(--s)); font-weight:700; color:var(--ink); word-break:keep-all; }
-  .datevenue .sep{ color:var(--ink-soft); margin:0 10px; font-weight:400; }
+  .eventmeta .mi-item{ display:inline-flex; align-items:center; gap:calc(var(--dv) * .3); }
+  .eventmeta .mi{ height:calc(var(--dv) * 1.02); width:auto; flex:none; }
+  .eventmeta .mi.pin{ height:calc(var(--dv) * 1.18); }
   .subvenue{ margin-top:5px; font-size:calc(11.2px * var(--s)); color:var(--ink-soft); line-height:1.6; word-break:keep-all; }
 
   .section-head{ display:flex; align-items:center; gap:11px; margin:15px 0 8px; }
@@ -127,17 +139,17 @@
     background:rgba(8,13,24,.86); border-radius:14px; border:1px solid rgba(255,255,255,.12);
     box-shadow:0 16px 40px -20px rgba(0,0,0,.4); overflow:hidden;
   }
-  table.prog{ width:100%; border-collapse:collapse; font-size:calc(12.3px * var(--s)); }
+  table.prog{ width:100%; border-collapse:collapse; font-size:calc(12.3px * var(--t)); }
   table.prog th{
-    background:rgba(255,255,255,.07); color:var(--ink); font-weight:700; font-size:calc(11px * var(--s));
-    padding:8px 18px; text-align:left; letter-spacing:.06em; border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.07); color:var(--ink); font-weight:700; font-size:calc(11px * var(--t));
+    padding:calc(5px * var(--t)) 18px; text-align:left; letter-spacing:.06em; border-bottom:1px solid var(--line);
     text-transform:uppercase;
   }
-  table.prog td{ padding:7px 18px; border-bottom:1px solid var(--line); vertical-align:middle; color:var(--ink); line-height:1.46; }
+  table.prog td{ padding:calc(var(--rp) * var(--t)) 18px; border-bottom:1px solid var(--line); vertical-align:middle; color:var(--ink); line-height:1.28; }
   table.prog tr.alt td{ background:var(--row-alt); }
-  table.prog td.time{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:calc(12px * var(--s)); color:#FF9B7A; white-space:nowrap; }
+  table.prog td.time{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:calc(12px * var(--t)); color:#FF9B7A; white-space:nowrap; }
   table.prog td.title-cell{ color:var(--ink); font-weight:500; }
-  table.prog td.speaker{ color:var(--ink-soft); white-space:nowrap; font-size:calc(11.4px * var(--s)); letter-spacing:.01em; }
+  table.prog td.speaker{ color:var(--ink-soft); white-space:nowrap; font-size:calc(11.4px * var(--t)); letter-spacing:.01em; }
   /* 시각 솔루션 세션의 30분 발표 두 건은 업체 소개가 아니라 총론이다. 포스터 표에는
      분야 태그가 없어 아래 25분 발표들과 구분되지 않으므로 제목 앞에 표시해 둔다. */
   /* 개회사처럼 한 칸에 두 사람이 들어가는 행에서 이름 폭을 맞춘다.
@@ -151,16 +163,18 @@
   }
   /* 좌장은 연사 열과 같은 칸에 두어 아래 연사 이름들과 왼쪽 끝이 맞는다 */
   tr.divider td.chair{
-    font-weight:600; font-size:calc(11px * var(--s)); letter-spacing:.02em; text-transform:none;
+    font-weight:600; font-size:calc(11px * var(--t)); letter-spacing:.02em; text-transform:none;
     opacity:.86; white-space:nowrap;
   }
+  table.prog .en-only{ font-weight:500; }
+  table.prog .cont{ padding-left:1em; }   /* 콜론에서 끊은 뒷줄은 한 칸 들여쓴다 */
   table.prog .tag{
     display:inline-block; margin-right:7px; padding:1px 6px 2px; border-radius:4px;
-    font-size:calc(9.6px * var(--s)); font-weight:700; letter-spacing:.02em; vertical-align:1.5px;
+    font-size:calc(9.6px * var(--t)); font-weight:700; letter-spacing:.02em; vertical-align:1.5px;
     color:#FFC07A; background:rgba(255,130,0,.14); border:1px solid rgba(255,130,0,.36);
   }
   tr.divider td{
-    padding:7px 18px; font-weight:800; font-size:calc(12px * var(--s)); letter-spacing:.05em;
+    padding:7px 18px; font-weight:800; font-size:calc(12px * var(--t)); letter-spacing:.05em;
     background:linear-gradient(90deg, rgba(255,130,0,.22), rgba(218,33,40,.22));
     color:var(--ink); border-bottom:none; border-top:1px solid var(--line);
     text-transform:uppercase;
@@ -168,21 +182,31 @@
   /* 국·영문 병기: 국문 아래 줄에 영문을 작게 붙인다. 행이 두 줄이 되므로
      포스터 폭(--poster-w)을 키워 A0 상자 안에서 세로 여유를 확보한다. */
   table.prog .en{
-    display:block; margin-top:1px; font-size:calc(10.4px * var(--s)); font-weight:400;
+    display:block; margin-top:1px; font-size:calc(10.4px * var(--t)); font-weight:400;
     color:var(--ink-soft); letter-spacing:.005em; line-height:1.36;
   }
-  table.prog th .en{ display:inline; margin:0 0 0 .5em; font-size:calc(9.4px * var(--s)); letter-spacing:.09em; opacity:.75; }
-  tr.divider td .en{ display:inline; margin:0; font-size:calc(11px * var(--s)); opacity:.8; }
-  tr.note td{ color:var(--ink-soft); font-size:calc(10.2px * var(--s)); border-bottom:none; padding:6px 18px 8px; font-style:italic; }
+  table.prog th .en{ display:inline; margin:0 0 0 .5em; font-size:calc(9.4px * var(--t)); letter-spacing:.09em; opacity:.75; }
+  tr.divider td .en{ display:inline; margin:0; font-size:calc(11px * var(--t)); opacity:.8; }
+  tr.note td{ color:var(--ink-soft); font-size:calc(10.2px * var(--t)); border-bottom:none; padding:4px 18px 6px; font-style:italic; }
 
-  .bottom{ margin-top:auto; padding-top:12px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+  .bottom{ margin-top:auto; padding-top:12px; border-top:1px solid var(--line);
+           display:flex; justify-content:flex-end; align-items:center; gap:calc(18px * var(--s)); }
+  .pass-row{ display:flex; align-items:center; justify-content:center;
+             gap:calc(16px * var(--s)); }
+  .qr-float{ flex:none; text-align:center; }
+  .qr-float .qr-cap{ margin-top:calc(6px * var(--s)); font-size:calc(11px * var(--s));
+                     font-weight:700; color:#FF8200; letter-spacing:.01em; white-space:nowrap; }
+  .qr-note{ text-align:right; line-height:1.45; }
+  .qr-note .t{ font-size:calc(13px * var(--s)); font-weight:800; color:#FF8200; }
+  .qr-note .d{ margin-top:calc(3px * var(--s)); font-size:calc(10.5px * var(--s)); color:var(--ink-soft); }
+  .qr-note .u{ font-family:'IBM Plex Mono',monospace; font-size:calc(10.5px * var(--s)); color:var(--ink); }
   .host-label{ font-family:'IBM Plex Mono',monospace; font-size:calc(10.5px * var(--s)); letter-spacing:.18em; color:var(--ink-soft); margin-bottom:9px; }
-  .host-logos{ display:flex; align-items:center; gap:22px; margin-bottom:9px; }
+  .host-logos{ display:flex; align-items:center; gap:calc(18px * var(--s)); }
   .host-logos img,
   .host-logos svg{ display:block; width:auto; }
-  .host-logos .kriss{ height:26px; }
-  .host-logos .kisti{ height:44px; }   /* 궤도 장식이 위아래로 크게 나와 있어, 글자 크기를 KRISS 와 맞추려면 이 정도가 필요하다 */
-  .host-logos .div{ width:1px; height:24px; background:var(--line); flex:none; }
+  .host-logos .kriss{ height:calc(35px * var(--s)); }
+  .host-logos .kisti{ height:calc(59.2px * var(--s)); }   /* 궤도 장식이 위아래로 크게 나와 있어, 글자 크기를 KRISS 와 맞추려면 이 정도가 필요하다 */
+  .host-logos .div{ width:1px; height:calc(32px * var(--s)); background:var(--line); flex:none; }
   .host-names{ font-size:calc(12px * var(--s)); font-weight:500; color:var(--ink-soft); letter-spacing:.01em; }
   .qr-col{ text-align:center; }
   #qrcode{ background:#FFFFFF; padding:8px; border:1px solid rgba(255,255,255,.2); border-radius:12px; display:inline-block; line-height:0; box-shadow:0 10px 30px -10px rgba(0,0,0,.5); }
@@ -257,6 +281,16 @@
 
   <div class="content">
     <div class="hero">
+      <div class="organizers"><span class="lbl">주관 ORGANIZED BY</span><div class="host-logos">
+          <svg class="kriss" viewBox="233.88 403.32 128.88 35.88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KRISS"><path fill-rule="nonzero" fill="rgb(95.68634%, 47.450256%, 12.548828%)" fill-opacity="1" d="M 320.234375 434.40625 C 315.765625 434.40625 311.507812 433.5 307.628906 431.867188 L 307.628906 436.730469 C 311.546875 438.226562 315.796875 439.050781 320.234375 439.050781 C 324.480469 439.050781 328.558594 438.296875 332.335938 436.917969 L 332.335938 432.070312 C 328.59375 433.574219 324.507812 434.40625 320.234375 434.40625 "/>
+<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 259.648438 436.484375 L 249.476562 423.964844 L 260.710938 412.253906 L 252.953125 412.253906 L 242.183594 423.78125 L 242.183594 412.253906 L 233.609375 412.253906 L 233.609375 438.171875 L 242.183594 438.171875 L 242.183594 426.773438 L 248.476562 435.425781 C 249.753906 437.121094 251.496094 438.171875 254.742188 438.171875 L 261.734375 438.171875 C 260.941406 437.753906 260.21875 437.15625 259.648438 436.484375 "/>
+<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 294.257812 438.171875 L 302.828125 438.171875 L 302.828125 412.253906 L 294.257812 412.253906 Z M 294.257812 438.171875 "/>
+<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 279.898438 420.382812 C 279.769531 422.882812 276.140625 424.550781 272.851562 424.550781 L 272.851562 416.5625 L 275.621094 416.5625 C 278.546875 416.5625 280.03125 418.285156 279.898438 420.382812 M 289.183594 435.433594 L 281.726562 426.710938 C 284.621094 426.304688 288.9375 423.980469 288.9375 419.75 C 288.9375 416.402344 286.855469 412.253906 276.839844 412.253906 L 264.28125 412.253906 L 264.28125 438.175781 L 272.851562 438.175781 L 272.851562 427.304688 L 279.011719 435.554688 C 279.921875 436.765625 281.289062 438.175781 284.488281 438.175781 L 292.113281 438.175781 C 290.890625 437.527344 290.355469 436.820312 289.183594 435.433594 "/>
+<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 360.171875 413.894531 C 360.171875 413.894531 355.726562 412.253906 349.886719 412.253906 C 342.792969 412.253906 336.667969 414.980469 336.667969 419.425781 C 336.667969 428.328125 353.242188 428.195312 353.242188 432.53125 C 353.242188 433.875 351.144531 434.480469 347.957031 434.480469 C 344.679688 434.480469 340.765625 433.390625 337.246094 430.667969 L 337.246094 436.484375 C 340.148438 438.058594 344.15625 438.929688 348.375 438.929688 C 357.496094 438.929688 362.28125 435.039062 362.28125 430.785156 C 362.28125 422.007812 346.011719 421.683594 346.011719 418.289062 C 346.011719 417.113281 347.644531 416.414062 350.808594 416.414062 C 353.921875 416.414062 357.851562 417.460938 360.171875 419.144531 Z M 360.171875 413.894531 "/>
+<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 330.554688 404.988281 C 330.554688 404.988281 326.105469 403.347656 320.269531 403.347656 C 313.175781 403.347656 307.050781 406.070312 307.050781 410.519531 C 307.050781 419.421875 323.625 419.289062 323.625 423.625 C 323.625 424.96875 321.527344 425.574219 318.339844 425.574219 C 315.0625 425.574219 311.148438 424.484375 307.625 421.761719 L 307.625 427.578125 C 310.527344 429.152344 314.539062 430.023438 318.757812 430.023438 C 327.875 430.023438 332.660156 426.132812 332.660156 421.878906 C 332.660156 413.101562 316.394531 412.777344 316.394531 409.382812 C 316.394531 408.207031 318.023438 407.507812 321.191406 407.507812 C 324.300781 407.507812 328.230469 408.558594 330.554688 410.242188 Z M 330.554688 404.988281 "/></svg>
+          <span class="div"></span>
+          <svg class="kisti" viewBox="211.65 115.24 186.52 104.82" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KISTI"><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 299.464844 193.410156 L 286.566406 193.410156 L 286.566406 159.941406 L 299.464844 159.941406 Z M 299.464844 193.410156 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 357.433594 156.089844 L 357.433594 193.410156 L 344.40625 193.410156 L 344.40625 156.089844 L 334.285156 156.089844 L 334.285156 143.441406 L 367.558594 143.441406 L 367.558594 156.089844 Z M 357.433594 156.089844 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 384.945312 193.410156 L 372.039062 193.410156 L 372.039062 159.941406 L 384.945312 159.941406 Z M 384.945312 193.410156 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 301.140625 149.605469 C 301.140625 154.125 297.480469 157.78125 292.964844 157.78125 C 288.449219 157.78125 284.792969 154.125 284.792969 149.605469 C 284.792969 145.09375 288.449219 141.429688 292.964844 141.429688 C 297.480469 141.429688 301.140625 145.09375 301.140625 149.605469 "/><path fill-rule="nonzero" fill="rgb(85.76355%, 11.999512%, 14.941406%)" fill-opacity="1" d="M 287.125 202.503906 C 312.886719 192.199219 337.175781 178.476562 337.175781 168.230469 C 337.175781 163.058594 333.804688 160 325.136719 158.9375 C 319.53125 158.246094 313.128906 158.828125 314.261719 153.769531 C 315.363281 148.847656 327.929688 144.257812 334.285156 143.441406 L 334.285156 133.289062 C 317.359375 139.089844 302.175781 146.609375 302.175781 157.566406 C 302.175781 162.824219 305.316406 168.3125 314.207031 169.105469 C 322.765625 169.875 324.5625 172.226562 324.5625 175.484375 C 324.5625 181.894531 308.535156 192.199219 287.125 202.503906 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 386.546875 149.605469 C 386.546875 154.125 382.890625 157.78125 378.375 157.78125 C 373.859375 157.78125 370.199219 154.125 370.199219 149.605469 C 370.199219 145.09375 373.859375 141.429688 378.375 141.429688 C 382.890625 141.429688 386.546875 145.09375 386.546875 149.605469 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 221.382812 210.984375 C 216.167969 201.5 239.964844 180.285156 239.964844 180.285156 C 217.429688 196.742188 208.808594 209.597656 212.476562 215.800781 C 216.734375 223 242.1875 221.957031 280.65625 205.125 C 249.746094 217.148438 225.214844 217.953125 221.382812 210.984375 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 397.460938 120.382812 C 390.613281 109.171875 353.222656 116.378906 302.621094 142.566406 C 345.386719 123.128906 383.359375 115.050781 390.628906 125.148438 C 393.019531 128.46875 392.140625 134.996094 386.535156 143.171875 C 391.386719 138.476562 400.925781 126.058594 397.460938 120.382812 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 243.574219 193.410156 L 243.574219 143.441406 L 256.480469 143.441406 L 256.480469 165.660156 L 267.320312 143.441406 L 282.265625 143.441406 L 270.121094 166.207031 L 282.539062 193.410156 L 268.171875 193.410156 L 256.480469 166.785156 L 256.480469 193.410156 Z M 243.574219 193.410156 "/></svg>
+        </div></div>
       <div class="hero-logo-row">
         <svg class="hero-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="92" fill="none" stroke="#FFFFFF" stroke-width="7"/><line x1="100.0" y1="17.0" x2="100.0" y2="34.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="141.5" y1="28.1" x2="136.0" y2="37.6" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="171.9" y1="58.5" x2="162.4" y2="64.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="183.0" y1="100.0" x2="166.0" y2="100.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="171.9" y1="141.5" x2="162.4" y2="136.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="141.5" y1="171.9" x2="136.0" y2="162.4" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="100.0" y1="183.0" x2="100.0" y2="166.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="58.5" y1="171.9" x2="64.0" y2="162.4" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="28.1" y1="141.5" x2="37.6" y2="136.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="17.0" y1="100.0" x2="34.0" y2="100.0" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="28.1" y1="58.5" x2="37.6" y2="64.0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><line x1="58.5" y1="28.1" x2="64.0" y2="37.6" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><path d="M108,102 Q98.3,72.8 74,54" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q132.4,104.7 152,90" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q79.3,114.1 62,140" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><path d="M108,102 Q115.7,128.2 138,144" fill="none" stroke="#0075BA" stroke-width="5" stroke-linecap="round"/><circle cx="74" cy="54" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="152" cy="90" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="62" cy="140" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="138" cy="144" r="7.5" fill="#FFFFFF" stroke="#0075BA" stroke-width="5"/><circle cx="108" cy="102" r="12" fill="#FF8200"/><circle cx="108" cy="102" r="20" fill="none" stroke="#FF8200" stroke-opacity="0.45" stroke-width="4"/></svg>
         <div class="wordmark-text">Time-Net Korea <span class="year-inline">2026</span></div>
@@ -412,75 +446,61 @@
       </div>
 
       <div class="accent-bar"></div>
-      <div class="pass-card">
-        <div class="datevenue">2026. 10. 29. (THU) 09:00–17:45<span class="sep">·</span>한국과학기술회관 대회의실 2</div>
-        <div class="subvenue">서울 강남구 테헤란로7길 22(역삼동 635-4), 1관 지하1층 · 지하철 2호선 강남역 12번 출구 / 역삼역 4번 출구 도보 10분 · 주차 혼잡, 대중교통 권장</div>
+      <div class="pass-row">
+        <div class="eventmeta">
+          <span class="mi-item"><svg class="mi" viewBox="-2 -2 38 39" fill="none" stroke="#FF8200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect y="4" width="34" height="31" rx="4"/><path d="M 0,13 H 34 M 9,0 V 8 M 25,0 v 8"/><g fill="#FF8200" stroke="none"><circle cx="10" cy="21" r="1.5"/><circle cx="18" cy="21" r="1.5"/><circle cx="26" cy="21" r="1.5"/><circle cx="10" cy="28" r="1.5"/><circle cx="18" cy="28" r="1.5"/></g></svg>2026. 10. 29. (THU) 09:00–17:45</span>
+          <span class="mi-item"><svg class="mi pin" viewBox="-2 -2 38 47" fill="none" stroke="#FF8200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M 17,0 C 7.6,0 0,7.5 0,16.8 0,29.2 17,43 17,43 17,43 34,29.2 34,16.8 34,7.5 26.4,0 17,0 Z"/><circle cx="17" cy="16" r="6"/></svg>한국과학기술회관 대회의실 2</span>
+        </div>
+        <div class="qr-float">
+          <div id="qrcode"></div>
+          <div class="qr-cap">행사 홈페이지 · 참가 등록</div>
+        </div>
       </div>
-    </div>
-
-    <div class="section-head">
-      <div class="orb"></div>
-      <div class="label">행사 프로그램</div>
-      <div class="subl">PROGRAM · 2026.10.29(THU)</div>
     </div>
 
     <div class="table-card">
     <table class="prog">
-      <tr><th style="width:104px;">시간<span class="en">TIME</span></th><th>프로그램 / 발표<span class="en">PROGRAM</span></th><th style="width:236px;">연사<span class="en">SPEAKER</span></th></tr>
-      <tr><td class="time">09:00–10:00</td><td class="title-cell">등록<span class="en">Registration &amp; Welcome</span></td><td class="speaker"></td></tr>
-      <tr class="alt"><td class="time">10:00–10:15</td><td class="title-cell">개회사<span class="en">Opening Remarks</span></td><td class="speaker"><span class="spk-line"><span class="spk-name"><span>이</span><span>호</span><span>성</span></span>원장 (KRISS)</span><span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장 (KISTI)</span></td></tr>
+      <tr><th style="width:104px;">시간</th><th>프로그램 / 발표</th><th style="width:236px;">연사</th></tr>
+      <tr><td class="time">09:00–10:00</td><td class="title-cell">등록</td><td class="speaker"></td></tr>
+      <tr class="alt"><td class="time">10:00–10:15</td><td class="title-cell">개회사</td><td class="speaker"><span class="spk-line"><span class="spk-name"><span>이</span><span>호</span><span>성</span></span>원장 (KRISS)</span><span class="spk-line"><span class="spk-name"><span>이</span><span>식</span></span>원장 (KISTI)</span></td></tr>
 
-      <tr class="divider"><td colspan="2">총론 OVERVIEW</td><td class="chair">좌장 <span class="en">CHAIR</span> 허명선 그룹장 (KRISS)</td></tr>
-      <tr><td class="time">10:15–10:30</td><td class="title-cell"><span class="tag">총론</span>공공재로서의 대한민국 표준시<span class="en">Korea Standard Time as a Public Utility in Korea</span></td><td class="speaker">허명선 그룹장 (KRISS)</td></tr>
-      <tr class="alt"><td class="time">10:30–11:00</td><td class="title-cell"><span class="tag">총론</span>국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망<span class="en">Prospects for Time Synchronization Services over the National Research Network</span></td><td class="speaker">조부승 센터장 (KISTI)</td></tr>
-      <tr><td class="time">11:00–11:30</td><td class="title-cell"><span class="tag">총론</span>AI-자동화 시대의 시간 비동기화 이슈와 국가안보<span class="en">Time Desynchronization and National Security in the Era of AI and Automation</span></td><td class="speaker">윤정현 연구위원<br>(국가안보전략연구원)</td></tr>
-      <tr class="alt"><td class="time">11:30–12:00</td><td class="title-cell"><span class="tag">총론</span>불확실성의 시대, 강인한 시각 정보 확보의 중요성<span class="en">Importance of Resilient Timing in an Insecure World</span></td><td class="speaker">Neil Pitman<br>(Adtran/Oscilloquartz)</td></tr>
-      <tr><td class="time">12:00–13:30</td><td class="title-cell" style="color:var(--ink-soft);">사진촬영 및 오찬<span class="en">Photo Session &amp; Lunch</span></td><td class="speaker"></td></tr>
+      <tr class="divider"><td colspan="2">총론</td><td class="chair">좌장 허명선 그룹장 (KRISS)</td></tr>
+      <tr><td class="time">10:15–10:30</td><td class="title-cell"><span class="tag">총론</span>공공재로서의 대한민국 표준시</td><td class="speaker">허명선 그룹장 (KRISS)</td></tr>
+      <tr class="alt"><td class="time">10:30–11:00</td><td class="title-cell"><span class="tag">총론</span>국내외 광기반 시간·주파수 전송망 구축 동향 및 국가연구망 시각동기 서비스 전망</td><td class="speaker">조부승 센터장 (KISTI)</td></tr>
+      <tr><td class="time">11:00–11:30</td><td class="title-cell"><span class="tag">총론</span>AI-자동화 시대의 시간 비동기화 이슈와 국가안보</td><td class="speaker">윤정현 연구위원<br>(국가안보전략연구원)</td></tr>
+      <tr class="alt"><td class="time">11:30–12:00</td><td class="title-cell"><span class="tag">총론</span><span class="en-only">Importance of Resilient Timing in an Insecure World</span></td><td class="speaker">Neil Pitman<br>(Adtran/Oscilloquartz)</td></tr>
+      <tr><td class="time">12:00–12:40</td><td class="title-cell" style="color:var(--ink-soft);">사진촬영</td><td class="speaker"></td></tr>
 
-      <tr class="divider"><td colspan="2">국가 기반시설과 시각동기 · TIMING AND THE NATIONAL INFRASTRUCTURES</td><td class="chair">좌장 <span class="en">CHAIR</span> 조부승 센터장 (KISTI)</td></tr>
-      <tr class="alt"><td class="time">13:30–13:55</td><td class="title-cell">대한민국 표준시로 연결되는 전력계통: GPS 취약성 극복과 네트워크 기반 시각동기<span class="en">Linking the Power Grid to KST: Overcoming GPS Vulnerabilities through Network-Based Time Synchronization</span></td><td class="speaker">김충효 책임연구원 (한국전력공사)</td></tr>
-      <tr><td class="time">13:55–14:20</td><td class="title-cell">지상파 항법에서의 시각동기<span class="en">Timing in Terrestrial Radio Navigation</span></td><td class="speaker">서기열 책임연구원 (KRISO)</td></tr>
-      <tr class="alt"><td class="time">14:20–14:45</td><td class="title-cell">VLBI에서의 정밀시각주파수, KVN에서의 활용<span class="en">Precision Time and Frequency in VLBI: Applications in the Korean VLBI Network</span></td><td class="speaker">정태현 센터장 (KASI)</td></tr>
-      <tr><td class="time">14:45–15:10</td><td class="title-cell">양자 암호 통신의 시각 동기화<span class="en">Time Synchronization in Quantum Cryptography Communication</span></td><td class="speaker">염다현 수석연구원 (IDQ)</td></tr>
-      <tr class="alt"><td class="time">15:10–15:30</td><td class="title-cell" style="color:var(--ink-soft);">휴식<span class="en">Coffee Break</span></td><td class="speaker"></td></tr>
+      <tr class="divider"><td colspan="2">국가 기반시설과 시각동기</td><td class="chair">좌장 조부승 센터장 (KISTI)</td></tr>
+      <tr class="alt"><td class="time">13:30–13:55</td><td class="title-cell">대한민국 표준시로 연결되는 전력계통:<br><span class="cont">GPS 취약성 극복과 네트워크 기반 시각동기</span></td><td class="speaker">김충효 책임연구원 (한국전력공사)</td></tr>
+      <tr><td class="time">13:55–14:20</td><td class="title-cell">지상파 항법에서의 시각동기</td><td class="speaker">서기열 책임연구원 (KRISO)</td></tr>
+      <tr class="alt"><td class="time">14:20–14:45</td><td class="title-cell">VLBI에서의 정밀시각주파수, KVN에서의 활용</td><td class="speaker">정태현 센터장 (KASI)</td></tr>
+      <tr><td class="time">14:45–15:10</td><td class="title-cell">양자 암호 통신의 시각 동기화</td><td class="speaker">염다현 수석연구원 (IDQ)</td></tr>
+      <tr class="alt"><td class="time">15:10–15:30</td><td class="title-cell" style="color:var(--ink-soft);">휴식</td><td class="speaker"></td></tr>
 
-      <tr class="divider"><td colspan="2">시각 솔루션 · TIMING SOLUTIONS</td><td class="chair">좌장 <span class="en">CHAIR</span> 유대혁 단장 (KRISS)</td></tr>
-      <tr><td class="time">15:30–16:00</td><td class="title-cell"><span class="tag">총론</span>유럽의 광섬유 시각주파수 전송망 <span style="color:#FF9B7A;">(Online)</span><span class="en">The European Fiber Network</span></td><td class="speaker">Cecilia Clivati (INRiM)</td></tr>
-      <tr class="alt"><td class="time">16:00–16:30</td><td class="title-cell"><span class="tag">총론</span>상용 원자시계 및 타이밍 솔루션<span class="en">Clocks and Timing Solutions</span></td><td class="speaker">이인섭 이사 (Microchip)</td></tr>
-      <tr><td class="time">16:30–16:55</td><td class="title-cell">초정밀 시각주파수 국가망 구축방안<span class="en">Nationwide High-precision Time-Frequency Network</span></td><td class="speaker">김정대 상무 (Cisco)</td></tr>
-      <tr class="alt"><td class="time">16:55–17:20</td><td class="title-cell">광통신을 이용한 시각동기 솔루션<span class="en">Time Synchronization Solutions using Optical Technology</span></td><td class="speaker">이정호 대표 (이투비비)</td></tr>
-      <tr><td class="time">17:20–17:45</td><td class="title-cell">아시아에서의 시각 서비스<span class="en">Time as a Service in Asia</span></td><td class="speaker">염병국 팀장 (KTsat)</td></tr>
-      <tr class="alt"><td class="time">17:45</td><td class="title-cell" style="color:var(--ink-soft);">폐회<span class="en">Closing</span></td><td class="speaker"></td></tr>
-      <tr class="note"><td colspan="3">* 세부 연사 및 프로그램은 사정에 따라 변경될 수 있습니다.<span class="en">* Speakers and programme details are subject to change.</span></td></tr>
+      <tr class="divider"><td colspan="2">시각 솔루션</td><td class="chair">좌장 유대혁 단장 (KRISS)</td></tr>
+      <tr><td class="time">15:30–16:00</td><td class="title-cell"><span class="tag">총론</span><span class="en-only">The European Fiber Network</span> <span style="color:#FF9B7A;">(Online)</span></td><td class="speaker">Cecilia Clivati (INRiM)</td></tr>
+      <tr class="alt"><td class="time">16:00–16:30</td><td class="title-cell"><span class="tag">총론</span>상용 원자시계 및 타이밍 솔루션</td><td class="speaker">이인섭 이사 (Microchip)</td></tr>
+      <tr><td class="time">16:30–16:55</td><td class="title-cell">초정밀 시각주파수 국가망 구축방안</td><td class="speaker">김정대 상무 (Cisco)</td></tr>
+      <tr class="alt"><td class="time">16:55–17:20</td><td class="title-cell">광통신을 이용한 시각동기 솔루션</td><td class="speaker">이정호 대표 (이투비비)</td></tr>
+      <tr><td class="time">17:20–17:45</td><td class="title-cell">아시아에서의 시각 서비스</td><td class="speaker">염병국 팀장 (KTsat)</td></tr>
+      <tr class="alt"><td class="time">17:45</td><td class="title-cell" style="color:var(--ink-soft);">폐회</td><td class="speaker"></td></tr>
+      <tr class="note"><td colspan="3">* 세부 연사 및 프로그램은 사정에 따라 변경될 수 있습니다.</td></tr>
     </table>
     </div>
-
-    <div class="bottom">
-      <div class="host-col">
-        <div class="host-label">주관 ORGANIZED BY</div>
-        <div class="host-logos">
-          <svg class="kriss" viewBox="233.88 403.32 128.88 35.88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KRISS"><path fill-rule="nonzero" fill="rgb(95.68634%, 47.450256%, 12.548828%)" fill-opacity="1" d="M 320.234375 434.40625 C 315.765625 434.40625 311.507812 433.5 307.628906 431.867188 L 307.628906 436.730469 C 311.546875 438.226562 315.796875 439.050781 320.234375 439.050781 C 324.480469 439.050781 328.558594 438.296875 332.335938 436.917969 L 332.335938 432.070312 C 328.59375 433.574219 324.507812 434.40625 320.234375 434.40625 "/>
-<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 259.648438 436.484375 L 249.476562 423.964844 L 260.710938 412.253906 L 252.953125 412.253906 L 242.183594 423.78125 L 242.183594 412.253906 L 233.609375 412.253906 L 233.609375 438.171875 L 242.183594 438.171875 L 242.183594 426.773438 L 248.476562 435.425781 C 249.753906 437.121094 251.496094 438.171875 254.742188 438.171875 L 261.734375 438.171875 C 260.941406 437.753906 260.21875 437.15625 259.648438 436.484375 "/>
-<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 294.257812 438.171875 L 302.828125 438.171875 L 302.828125 412.253906 L 294.257812 412.253906 Z M 294.257812 438.171875 "/>
-<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 279.898438 420.382812 C 279.769531 422.882812 276.140625 424.550781 272.851562 424.550781 L 272.851562 416.5625 L 275.621094 416.5625 C 278.546875 416.5625 280.03125 418.285156 279.898438 420.382812 M 289.183594 435.433594 L 281.726562 426.710938 C 284.621094 426.304688 288.9375 423.980469 288.9375 419.75 C 288.9375 416.402344 286.855469 412.253906 276.839844 412.253906 L 264.28125 412.253906 L 264.28125 438.175781 L 272.851562 438.175781 L 272.851562 427.304688 L 279.011719 435.554688 C 279.921875 436.765625 281.289062 438.175781 284.488281 438.175781 L 292.113281 438.175781 C 290.890625 437.527344 290.355469 436.820312 289.183594 435.433594 "/>
-<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 360.171875 413.894531 C 360.171875 413.894531 355.726562 412.253906 349.886719 412.253906 C 342.792969 412.253906 336.667969 414.980469 336.667969 419.425781 C 336.667969 428.328125 353.242188 428.195312 353.242188 432.53125 C 353.242188 433.875 351.144531 434.480469 347.957031 434.480469 C 344.679688 434.480469 340.765625 433.390625 337.246094 430.667969 L 337.246094 436.484375 C 340.148438 438.058594 344.15625 438.929688 348.375 438.929688 C 357.496094 438.929688 362.28125 435.039062 362.28125 430.785156 C 362.28125 422.007812 346.011719 421.683594 346.011719 418.289062 C 346.011719 417.113281 347.644531 416.414062 350.808594 416.414062 C 353.921875 416.414062 357.851562 417.460938 360.171875 419.144531 Z M 360.171875 413.894531 "/>
-<path fill-rule="nonzero" fill="rgb(95.3%, 95.7%, 96.9%)" fill-opacity="1" d="M 330.554688 404.988281 C 330.554688 404.988281 326.105469 403.347656 320.269531 403.347656 C 313.175781 403.347656 307.050781 406.070312 307.050781 410.519531 C 307.050781 419.421875 323.625 419.289062 323.625 423.625 C 323.625 424.96875 321.527344 425.574219 318.339844 425.574219 C 315.0625 425.574219 311.148438 424.484375 307.625 421.761719 L 307.625 427.578125 C 310.527344 429.152344 314.539062 430.023438 318.757812 430.023438 C 327.875 430.023438 332.660156 426.132812 332.660156 421.878906 C 332.660156 413.101562 316.394531 412.777344 316.394531 409.382812 C 316.394531 408.207031 318.023438 407.507812 321.191406 407.507812 C 324.300781 407.507812 328.230469 408.558594 330.554688 410.242188 Z M 330.554688 404.988281 "/></svg>
-          <span class="div"></span>
-          <svg class="kisti" viewBox="211.65 115.24 186.52 104.82" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KISTI"><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 299.464844 193.410156 L 286.566406 193.410156 L 286.566406 159.941406 L 299.464844 159.941406 Z M 299.464844 193.410156 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 357.433594 156.089844 L 357.433594 193.410156 L 344.40625 193.410156 L 344.40625 156.089844 L 334.285156 156.089844 L 334.285156 143.441406 L 367.558594 143.441406 L 367.558594 156.089844 Z M 357.433594 156.089844 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 384.945312 193.410156 L 372.039062 193.410156 L 372.039062 159.941406 L 384.945312 159.941406 Z M 384.945312 193.410156 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 301.140625 149.605469 C 301.140625 154.125 297.480469 157.78125 292.964844 157.78125 C 288.449219 157.78125 284.792969 154.125 284.792969 149.605469 C 284.792969 145.09375 288.449219 141.429688 292.964844 141.429688 C 297.480469 141.429688 301.140625 145.09375 301.140625 149.605469 "/><path fill-rule="nonzero" fill="rgb(85.76355%, 11.999512%, 14.941406%)" fill-opacity="1" d="M 287.125 202.503906 C 312.886719 192.199219 337.175781 178.476562 337.175781 168.230469 C 337.175781 163.058594 333.804688 160 325.136719 158.9375 C 319.53125 158.246094 313.128906 158.828125 314.261719 153.769531 C 315.363281 148.847656 327.929688 144.257812 334.285156 143.441406 L 334.285156 133.289062 C 317.359375 139.089844 302.175781 146.609375 302.175781 157.566406 C 302.175781 162.824219 305.316406 168.3125 314.207031 169.105469 C 322.765625 169.875 324.5625 172.226562 324.5625 175.484375 C 324.5625 181.894531 308.535156 192.199219 287.125 202.503906 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 386.546875 149.605469 C 386.546875 154.125 382.890625 157.78125 378.375 157.78125 C 373.859375 157.78125 370.199219 154.125 370.199219 149.605469 C 370.199219 145.09375 373.859375 141.429688 378.375 141.429688 C 382.890625 141.429688 386.546875 145.09375 386.546875 149.605469 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 221.382812 210.984375 C 216.167969 201.5 239.964844 180.285156 239.964844 180.285156 C 217.429688 196.742188 208.808594 209.597656 212.476562 215.800781 C 216.734375 223 242.1875 221.957031 280.65625 205.125 C 249.746094 217.148438 225.214844 217.953125 221.382812 210.984375 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 397.460938 120.382812 C 390.613281 109.171875 353.222656 116.378906 302.621094 142.566406 C 345.386719 123.128906 383.359375 115.050781 390.628906 125.148438 C 393.019531 128.46875 392.140625 134.996094 386.535156 143.171875 C 391.386719 138.476562 400.925781 126.058594 397.460938 120.382812 "/><path fill-rule="nonzero" fill="rgb(7.215881%, 48.391724%, 79.138184%)" fill-opacity="1" d="M 243.574219 193.410156 L 243.574219 143.441406 L 256.480469 143.441406 L 256.480469 165.660156 L 267.320312 143.441406 L 282.265625 143.441406 L 270.121094 166.207031 L 282.539062 193.410156 L 268.171875 193.410156 L 256.480469 166.785156 L 256.480469 193.410156 Z M 243.574219 193.410156 "/></svg>
-        </div>
-        <div class="host-names">한국표준과학연구원 &nbsp;·&nbsp; 한국과학기술정보연구원</div>
-      </div>
       <div class="qr-col">
         <div id="qrcode"></div>
-        <div class="qr-caption">SCAN FOR PROGRAM<br>&amp; REGISTRATION</div>
       </div>
     </div>
   </div>
 </div>
 <script>
+  var QRS = parseFloat(getComputedStyle(document.documentElement)
+                       .getPropertyValue('--s')) || 1;
+  var QRPX = Math.round(84 * QRS);
   new QRCode(document.getElementById("qrcode"), {
     text: "https://sites.google.com/view/time-net-korea/home",
-    width: 84, height: 84,
+    width: QRPX, height: QRPX,
     colorDark: "#22262B",
     colorLight: "#FFFFFF",
     correctLevel: QRCode.CorrectLevel.M

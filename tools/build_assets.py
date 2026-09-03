@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Time-Net Korea 2026 배포 자산 빌드.
 
-  timenet_program.html -> timenet_program.pdf / .png
-  timenet_korea_poster_Hyun_{dark,light}_bilingual_large.html
-                       -> ....pdf / .png / .gif
+  timenet_program.html            -> .pdf / .png
+  timenet2026_poster_schedule.html -> .pdf / .png / .gif
 
-포스터는 국·영문 병기 인쇄용 확대판 두 벌(다크·라이트)만 쓴다. 글자 배율은
+포스터는 전체 시간표 판(한글 전용) 한 벌을 쓴다. 요약 시안
+timenet2026_poster_summary.svg 은 Inkscape 로 따로 관리한다. 글자 배율은
 tools/fit_large.py 가 정하므로, 표 내용을 고쳤으면 그것부터 돌릴 것.
 
 headless Chrome 으로 렌더링한다. 원본 HTML 은 건드리지 않고, 출력 전용
@@ -15,9 +15,7 @@ CSS(여백·애니메이션 정지 등)를 입힌 사본을 임시 폴더에 만
     python3 tools/build_assets.py auto       # 소스가 바뀐 것만 다시 렌더
     python3 tools/build_assets.py check      # 프로그램 <-> 포스터 대조만
     python3 tools/build_assets.py program    # 프로그램 pdf+png 만
-    python3 tools/build_assets.py poster     # 포스터 두 벌 pdf+png+gif
-    python3 tools/build_assets.py poster-dark    # 다크 확대판만
-    python3 tools/build_assets.py poster-light   # 라이트 확대판만
+    python3 tools/build_assets.py poster     # 포스터 pdf+png+gif
 
 Pillow 필요: python3 -m pip install pillow
 """
@@ -36,13 +34,13 @@ ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 BUILD  = os.path.join(tempfile.gettempdir(), 'timenet-build')
 
+# 홈페이지가 이 주소를 직접 링크하고 있어 파일명을 바꾸지 않는다
 PROGRAM = os.path.join(ROOT, 'timenet_program.html')
 
-# 다크·라이트 두 벌을 같은 방식으로 뽑는다. page 는 포스터 바깥 여백에 깔리는 색으로,
-# 캡처가 1px 어긋나도 반대색 테두리가 비치지 않게 각 포스터의 바탕에 맞춘다.
+# page 는 포스터 바깥 여백에 깔리는 색으로, 캡처가 1px 어긋나도 반대색
+# 테두리가 비치지 않게 포스터 바탕에 맞춘다.
 POSTERS = [
-    {'key': 'poster_bi_large',       'name': 'timenet_korea_poster_Hyun_dark_bilingual_large',  'page': '#05070d'},
-    {'key': 'poster_light_bi_large', 'name': 'timenet_korea_poster_Hyun_light_bilingual_large', 'page': '#F8F7F4'},
+    {'key': 'poster_schedule', 'name': 'timenet2026_poster_schedule', 'page': '#05070d'},
 ]
 for _p in POSTERS:
     _p['src'] = os.path.join(ROOT, _p['name'] + '.html')
@@ -284,7 +282,11 @@ def poster_rows(path):
         cell = cell.group(1) if cell else ''
         en = re.search(r'<span class="en">(.*?)</span>', cell, re.S)
         en = _txt(en.group(1)) if en else ''
-        ko = _txt(re.sub(r'<span class="(en|tag)">.*?</span>', '', cell, flags=re.S))
+        # 해외 연사 발표는 국문 없이 영문 제목만 싣는다 (.en-only)
+        eo = re.search(r'<span class="en-only">(.*?)</span>', cell, re.S)
+        if eo:
+            en = _txt(eo.group(1))
+        ko = _txt(re.sub(r'<span class="(en|en-only|tag)">.*?</span>', '', cell, flags=re.S))
         ko = re.sub(r'\s*\(online\)\s*$', '', ko, flags=re.I)   # 프로그램은 태그로 따로 붙인다
         sp = re.search(r'class="speaker">(.*?)</td>', tr, re.S)
         out[_txt(t.group(1))] = (ko, en, _txt(sp.group(1)) if sp else '')
@@ -301,7 +303,7 @@ def check():
 
 def check_one(poster):
     a, b = program_rows(), poster_rows(poster['src'])
-    label = poster['name'].replace('timenet_korea_poster_Hyun_', '')
+    label = poster['name'].replace('timenet2026_poster_', '')
     field = {0: '국문', 1: '영문', 2: '연사'}
     problems, skipped = [], 0
     for t in sorted(set(a) | set(b)):
@@ -314,6 +316,14 @@ def check_one(poster):
         for i in (0, 1, 2):
             key = (t, ('ko', 'en', 'spk')[i])
             if _norm(a[t][i]) == _norm(b[t][i]):
+                continue
+            # 한글만 싣는 판에서는 영문 대조를, 영문만 싣는 행에서는 국문 대조를
+            # 건너뛴다. 포스터가 일부러 한쪽을 비워 둔 것이므로 불일치가 아니다.
+            if i == 1 and not b[t][1]:
+                skipped += 1
+                continue
+            if i == 0 and not b[t][0] and b[t][1]:
+                skipped += 1
                 continue
             if key in ALLOWED:
                 skipped += 1
@@ -352,7 +362,7 @@ def build_poster(poster):
     screenshot(src, png, w, h, scale=2)
     used = print_pdf(src, pdf, w, h)
     build_gif(poster, w, h, gif)
-    tag = poster['name'].replace('timenet_korea_poster_Hyun', '...')
+    tag = poster['name']
     print('  %s.png  %dx%d (2x)  %.1f KB' % (tag, w * 2, h * 2, os.path.getsize(png) / 1024))
     print('  %s.pdf  1p %dx%dpx (1:%.4f)  %.1f KB' % (tag, w, used, used / float(w), os.path.getsize(pdf) / 1024))
     print('  %s.gif  %dx%d %d프레임 %.0f초 루프  %.1f KB'
@@ -415,7 +425,7 @@ def main():
         for p in POSTERS:
             if p['key'] in todo:
                 print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
-                      % p['name'].replace('timenet_korea_poster_Hyun_', ''))
+                      % p['name'].replace('timenet2026_poster_', ''))
                 build_poster(p)
         write_stamp(now, todo)
         return
@@ -428,16 +438,15 @@ def main():
         print('프로그램 렌더링...')
         build_program()
         built.add('program')
-    if what in ('all', 'poster', 'poster-dark', 'poster-light'):
-        want = {'poster-dark': ['poster_bi_large'],
-                'poster-light': ['poster_light_bi_large']}.get(what, [p['key'] for p in POSTERS])
+    if what in ('all', 'poster'):
+        want = [p['key'] for p in POSTERS]
         for p in POSTERS:
             if p['key'] in want:
                 print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
-                      % p['name'].replace('timenet_korea_poster_Hyun_', ''))
+                      % p['name'].replace('timenet2026_poster_', ''))
                 build_poster(p)
                 built.add(p['key'])
-    if what in ('all', 'program', 'poster', 'poster-dark', 'poster-light'):
+    if what in ('all', 'program', 'poster'):
         _, now = stale()
         write_stamp(now, built)
 

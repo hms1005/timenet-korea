@@ -176,7 +176,7 @@
       .sans{font-family:&quot;Helvetica Neue&quot;,Helvetica,&quot;Apple SD Gothic Neo&quot;,Arial,sans-serif}
       .navy{fill:#F3F4F7}.orange{fill:#FF8200}.muted{fill:#AEB5C2}
       .thin{stroke:#FF8200;stroke-width:1.25;fill:none}.hair{stroke:#FF8200;stroke-width:.75;fill:none;opacity:.55}
-      .session-title{font-size:26px;font-weight:750;fill:#FF8200}.talk{font-size:19.6667px;font-weight:700;fill:#F3F4F7}.speaker{font-size:16.6667px;font-weight:450;fill:#AEB5C2}
+      .session-title{font-size:27px;font-weight:750;fill:#FF8200}.talk{font-size:19.6667px;font-weight:700;fill:#F3F4F7}.speaker{font-size:16.6667px;font-weight:450;fill:#AEB5C2}
     </style>
     <linearGradient
        id="darkPosterBg"
@@ -642,7 +642,7 @@
        class="session-title"
        id="text45"><tspan
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Helvetica;-inkscape-font-specification:Helvetica"
-         id="tspan88">국가 기반시설과 시각동기 · INFRASTRUCTURE TIMING</tspan></text>
+         id="tspan88">국가 기반시설과 시각동기 · INFRASTRUCTURE</tspan></text>
     <g
        transform="translate(286,1057)"
        id="g47">

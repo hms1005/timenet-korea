@@ -24,6 +24,7 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 | `timenet_program.html` | 행사 프로그램 시간표 (2026. 10. 29.) | 홈페이지에서 링크해 사용 중 — 이름 고정 |
 | `timenet_background_toggle.html` | 추진배경 및 목표 (국문/영문 토글) | 미사용 — 아래 참고 |
 | `timenet2026_poster_schedule.html` | 행사 포스터 — 전체 시간표 판 (다크, 한글 전용) | 홍보·인쇄용 PDF/PNG/GIF 로 출력 |
+| `timenet2026_poster_schedule_en.html` | 위 시간표 판의 영문판 (제목은 `timenet_program.html` 의 영문 제목, 연사는 로마자 표기) | 해외 연사·기관 안내용 PNG 만 출력 |
 | `timenet2026_poster_summary.svg` | 행사 포스터 — 요약 판 (세션 단위) | Inkscape 로 편집, PDF/PNG 동봉 |
 | `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |
 
@@ -117,6 +118,7 @@ python3 tools/build_assets.py poster         # 포스터만
 |---|---|
 | `timenet_program.html` | `timenet_program.pdf` (1페이지), `.png` (2x) |
 | `timenet2026_poster_schedule.html` | 같은 이름의 `.pdf` (1페이지), `.png` (2x), `.gif` (30프레임 6초 루프) |
+| `timenet2026_poster_schedule_en.html` | 같은 이름의 `.png` (2x) 만 — 영문판은 PDF·GIF 를 만들지 않습니다 |
 
 요약 판 `timenet2026_poster_summary.svg` 는 이 스크립트가 다루지 않습니다. Inkscape 로 편집하고
 PDF/PNG 는 따로 뽑습니다.

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Time-Net Korea 2026 배포 자산 빌드.
 
-  timenet_program.html            -> .pdf / .png
-  timenet2026_poster_schedule.html -> .pdf / .png / .gif
+  timenet_program.html               -> .pdf / .png
+  timenet2026_poster_schedule.html    -> .pdf / .png / .gif
+  timenet2026_poster_schedule_en.html -> .png            (영문판, PNG 만)
 
 포스터는 전체 시간표 판(한글 전용) 한 벌을 쓴다. 요약 시안
 timenet2026_poster_summary.svg 은 Inkscape 로 따로 관리한다. 글자 배율은
@@ -39,8 +40,12 @@ PROGRAM = os.path.join(ROOT, 'timenet_program.html')
 
 # page 는 포스터 바깥 여백에 깔리는 색으로, 캡처가 1px 어긋나도 반대색
 # 테두리가 비치지 않게 포스터 바탕에 맞춘다.
+# formats 를 생략하면 pdf+png+gif 전부 만든다. lang 이 'en' 이면 표가 영문만
+# 싣는 판이라, 대조(check)는 영문 제목만 보고 국문·연사(로마자) 는 건너뛴다.
 POSTERS = [
-    {'key': 'poster_schedule', 'name': 'timenet2026_poster_schedule', 'page': '#05070d'},
+    {'key': 'poster_schedule',    'name': 'timenet2026_poster_schedule',    'page': '#05070d'},
+    {'key': 'poster_schedule_en', 'name': 'timenet2026_poster_schedule_en', 'page': '#05070d',
+     'formats': ('png',), 'lang': 'en'},
 ]
 for _p in POSTERS:
     _p['src'] = os.path.join(ROOT, _p['name'] + '.html')
@@ -305,6 +310,7 @@ def check_one(poster):
     a, b = program_rows(), poster_rows(poster['src'])
     label = poster['name'].replace('timenet2026_poster_', '')
     field = {0: '국문', 1: '영문', 2: '연사'}
+    fields = (1,) if poster.get('lang') == 'en' else (0, 1, 2)
     problems, skipped = [], 0
     for t in sorted(set(a) | set(b)):
         if t not in a:
@@ -313,7 +319,7 @@ def check_one(poster):
         if t not in b:
             problems.append('%s  프로그램에만 있음' % t)
             continue
-        for i in (0, 1, 2):
+        for i in fields:
             key = (t, ('ko', 'en', 'spk')[i])
             if _norm(a[t][i]) == _norm(b[t][i]):
                 continue
@@ -359,14 +365,18 @@ def build_poster(poster):
     w, h = measure(src, pw + 40, selector='.poster')
     base = os.path.join(ROOT, poster['name'])
     png, pdf, gif = base + '.png', base + '.pdf', base + '.gif'
-    screenshot(src, png, w, h, scale=2)
-    used = print_pdf(src, pdf, w, h)
-    build_gif(poster, w, h, gif)
+    formats = poster.get('formats', ('png', 'pdf', 'gif'))
     tag = poster['name']
-    print('  %s.png  %dx%d (2x)  %.1f KB' % (tag, w * 2, h * 2, os.path.getsize(png) / 1024))
-    print('  %s.pdf  1p %dx%dpx (1:%.4f)  %.1f KB' % (tag, w, used, used / float(w), os.path.getsize(pdf) / 1024))
-    print('  %s.gif  %dx%d %d프레임 %.0f초 루프  %.1f KB'
-          % (tag, w * GIF_SCALE, h * GIF_SCALE, GIF_N, GIF_LOOP, os.path.getsize(gif) / 1024))
+    if 'png' in formats:
+        screenshot(src, png, w, h, scale=2)
+        print('  %s.png  %dx%d (2x)  %.1f KB' % (tag, w * 2, h * 2, os.path.getsize(png) / 1024))
+    if 'pdf' in formats:
+        used = print_pdf(src, pdf, w, h)
+        print('  %s.pdf  1p %dx%dpx (1:%.4f)  %.1f KB' % (tag, w, used, used / float(w), os.path.getsize(pdf) / 1024))
+    if 'gif' in formats:
+        build_gif(poster, w, h, gif)
+        print('  %s.gif  %dx%d %d프레임 %.0f초 루프  %.1f KB'
+              % (tag, w * GIF_SCALE, h * GIF_SCALE, GIF_N, GIF_LOOP, os.path.getsize(gif) / 1024))
 
 
 STAMP = os.path.join(ROOT, 'tools', '.build-stamp')
@@ -424,8 +434,9 @@ def main():
             build_program()
         for p in POSTERS:
             if p['key'] in todo:
-                print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
-                      % p['name'].replace('timenet2026_poster_', ''))
+                print('포스터(%s) 렌더링...%s'
+                      % (p['name'].replace('timenet2026_poster_', ''),
+                         ' (GIF 30프레임, 1~2분)' if 'gif' in p.get('formats', ('gif',)) else ''))
                 build_poster(p)
         write_stamp(now, todo)
         return
@@ -442,8 +453,9 @@ def main():
         want = [p['key'] for p in POSTERS]
         for p in POSTERS:
             if p['key'] in want:
-                print('포스터(%s) 렌더링... (GIF 30프레임, 1~2분)'
-                      % p['name'].replace('timenet2026_poster_', ''))
+                print('포스터(%s) 렌더링...%s'
+                      % (p['name'].replace('timenet2026_poster_', ''),
+                         ' (GIF 30프레임, 1~2분)' if 'gif' in p.get('formats', ('gif',)) else ''))
                 build_poster(p)
                 built.add(p['key'])
     if what in ('all', 'program', 'poster'):

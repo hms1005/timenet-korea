@@ -26,6 +26,7 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 | `timenet2026_poster_schedule.html` | 행사 포스터 — 전체 시간표 판 (다크, 한글 전용) | 홍보·인쇄용 PDF/PNG/GIF 로 출력 |
 | `timenet2026_poster_schedule_en.html` | 위 시간표 판의 영문판 (제목은 `timenet_program.html` 의 영문 제목, 연사는 로마자 표기) | 해외 연사·기관 안내용 PNG 만 출력 |
 | `timenet2026_poster_summary.svg` | 행사 포스터 — 요약 판 (세션 단위) | Inkscape 로 편집. PNG 는 `rsvg-convert -w 3200 -h 4800`, PDF 는 headless Chrome 인쇄 (아래 참고) |
+| `timenet2026_poster_summary_small.png` | 위 국문 요약 판의 축소 PNG (1600x2400, 메일·SNS 첨부용) | `rsvg-convert -w 1600 -h 2400` 로 생성 |
 | `timenet2026_poster_summary_en.svg` | 위 요약 판의 영문판 (짧은 영문 제목 + 로마자 연사) | PNG 만 동봉 (`rsvg-convert -w 3200 -h 4800`) |
 | `timenet2026_poster_summary_en_linkedin.svg` | 위 영문 요약 판의 LinkedIn 용 (키 비주얼 제거, 4:5, 발표 글자 확대·시간 라벨 축소) | `tools/build_summary_en_linkedin.py` 로 생성, PNG 2560x3200 동봉 |
 | `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |

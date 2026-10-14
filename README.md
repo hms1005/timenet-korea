@@ -29,6 +29,8 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 | `timenet2026_poster_summary_small.png` | 위 국문 요약 판의 축소 PNG (1600x2400, 메일·SNS 첨부용) | `rsvg-convert -w 1600 -h 2400` 로 생성 |
 | `timenet2026_poster_summary_en.svg` | 위 요약 판의 영문판 (짧은 영문 제목 + 로마자 연사) | PNG 만 동봉 (`rsvg-convert -w 3200 -h 4800`) |
 | `timenet2026_poster_summary_en_linkedin.svg` | 위 영문 요약 판의 LinkedIn 용 (키 비주얼 제거, 4:5, 발표 글자 확대·시간 라벨 축소) | `tools/build_summary_en_linkedin.py` 로 생성, PNG 2560x3200 동봉 |
+| `MOD_poster_01.jpg`, `MOD_poster_02.jpg` | 디자이너 제작 포스터 원본 (JPG, A4 150dpi) | 원본은 그대로 둠 |
+| `MOD_poster_01_rev1.jpg`, `MOD_poster_02_rev1.jpg` | 위 원본에서 Clivati 발표를 기반시설 세션으로 옮긴 판 | `tools/mod_poster_move_clivati.py` 로 생성 (글자 키잉·인페인팅·재합성) |
 | `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |
 
 `timenet_background_toggle.html`은 현재 행사 홈페이지에서 사용하지 않습니다.

@@ -137,7 +137,7 @@ def build():
     loc = re.sub(r'transform="[^"]*"',
                  'transform="matrix(0.81396038,0,0,0.81396038,%s,%d)"' % (573.7, y - 31), loc, count=1)
     parts.append(cal)
-    parts.append(text(LEFT + 53, y, '2026. 10. 29. (THU) 09:00–17:45', DATE_PX, '#F3F4F7'))
+    parts.append(text(LEFT + 53, y, '2026. 10. 29. (THU) 09:00–18:00', DATE_PX, '#F3F4F7'))
     parts.append(loc)
     parts.append(text(620, y + 3, 'ST Center, Conference Rm. 2', DATE_PX, '#F3F4F7'))
 

@@ -25,7 +25,7 @@ GitHub Pages로 게시한 뒤 홈페이지에서 그 주소로 링크하는 방�
 | `timenet_background_toggle.html` | 추진배경 및 목표 (국문/영문 토글) | 미사용 — 아래 참고 |
 | `timenet2026_poster_schedule.html` | 행사 포스터 — 전체 시간표 판 (다크, 한글 전용) | 홍보·인쇄용 PDF/PNG/GIF 로 출력 |
 | `timenet2026_poster_schedule_en.html` | 위 시간표 판의 영문판 (제목은 `timenet_program.html` 의 영문 제목, 연사는 로마자 표기) | 해외 연사·기관 안내용 PNG 만 출력 |
-| `timenet2026_poster_summary.svg` | 행사 포스터 — 요약 판 (세션 단위) | Inkscape 로 편집, PDF/PNG 동봉 |
+| `timenet2026_poster_summary.svg` | 행사 포스터 — 요약 판 (세션 단위) | Inkscape 로 편집. PNG 는 `rsvg-convert -w 3200 -h 4800`, PDF 는 headless Chrome 인쇄 (아래 참고) |
 | `timenet2026_poster_summary_en.svg` | 위 요약 판의 영문판 (짧은 영문 제목 + 로마자 연사) | PNG 만 동봉 (`rsvg-convert -w 3200 -h 4800`) |
 | `timenet2026_poster_summary_en_linkedin.svg` | 위 영문 요약 판의 LinkedIn 용 (키 비주얼 제거, 4:5, 발표 글자 확대·시간 라벨 축소) | `tools/build_summary_en_linkedin.py` 로 생성, PNG 2560x3200 동봉 |
 | `tools/build_assets.py` | PDF·PNG·GIF 자동 생성 스크립트 | 아래 참고 |
@@ -123,7 +123,12 @@ python3 tools/build_assets.py poster         # 포스터만
 | `timenet2026_poster_schedule_en.html` | 같은 이름의 `.png` (2x) 만 — 영문판은 PDF·GIF 를 만들지 않습니다 |
 
 요약 판 `timenet2026_poster_summary.svg` 는 이 스크립트가 다루지 않습니다. Inkscape 로 편집하고
-PDF/PNG 는 따로 뽑습니다.
+PNG/PDF 는 따로 뽑습니다. PNG 는 `rsvg-convert -w 3200 -h 4800 -o <out.png> <src.svg>` 로 만들고,
+PDF 는 `rsvg-convert -f pdf` 를 쓰면 그라데이션 글자(부제)가 일부 뷰어에서 색 상자로 깨지므로
+SVG 를 `<img>` 로 감싼 HTML(`@page{size:1024px 1536px;margin:0}`)을 headless Chrome 의
+`--print-to-pdf` 로 인쇄합니다. 요약 판 세 벌(국문·영문·LinkedIn)은 발표 배치가 같으니
+한 벌을 고치면 나머지도 같이 맞춥니다 (LinkedIn 판은 `tools/build_summary_en_linkedin.py`
+의 `SESSIONS` 를 고치고 다시 실행).
 
 **HTML 원본은 건드리지 않습니다.** 출력 전용 CSS(여백 확보, 애니메이션 정지, 배경색 강제)를
 입힌 사본을 임시 폴더에 만들어 캡처하는 방식이라, 화면용 스타일과 문서용 스타일이 서로

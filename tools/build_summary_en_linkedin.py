@@ -42,14 +42,14 @@ SESSIONS = [
         ('Desynchronization in the AI Era', 'Jung-Hyun Yoon (INSS)'),
         ('Importance of Resilient Timing', 'Neil Pitman (Adtran/Oscilloquartz)'),
     ]),
-    ('TIMING AND THE NATIONAL INFRASTRUCTURES', '13:30–15:10', [
+    ('TIMING AND THE NATIONAL INFRASTRUCTURES', '13:30–15:55', [
         ('Power Grid Network Timing', 'Chung-Hyo Kim (KEPCO)'),
         ('Terrestrial Navigation Timing', 'Ki-Yeol Seo (KRISO)'),
         ('Timing for VLBI', 'Taehyun Jung (KASI)'),
         ('Quantum Cryptography Timing', 'Dahyun Yeom (IDQ)'),
-    ]),
-    ('TIMING SOLUTIONS', '15:30–17:45', [
         ('European Fiber Timing Network', 'Cecilia Clivati (INRiM)'),
+    ]),
+    ('TIMING SOLUTIONS', '16:00–17:45', [
         ('Clocks &amp; Timing Solutions', 'In-Seop Lee (Microchip)'),
         ('National Precision T&amp;F Network', 'Jeong-Dae Kim (Cisco)'),
         ('Optical Time Sync Solutions', 'Jeong-Ho Lee (SAFRAN)'),
@@ -164,16 +164,16 @@ def build():
         if title != SESSIONS[-1][0]:
             parts.append('<path d="M %d,%d H %d" stroke="#313b50"/>' % (LEFT, y, RIGHT))
 
-    # QR: 마지막 발표(홀로 왼쪽 단)와 같은 줄 오른쪽에
-    qr_top = H - 96 - 44
+    # QR: 마지막 세션 아래 오른쪽 구석 (마지막 줄이 2단 모두 차서 같은 줄에는 못 둔다)
+    qr_top = H - 96 - 32
     qr = element_by_id(src, 'qr-code')
     qr = re.sub(r'transform="[^"]*"', 'transform="translate(%d,%d)"' % (RIGHT - 96, qr_top), qr, count=1)
     cap = element_by_id(src, 'qr-caption')
     cap = re.sub(r'<text ', '<text style="%s" ' % FONT, cap)
     cap = cap.replace('x="832"', 'x="%d"' % (RIGHT - 96 - 16))
     cap = cap.replace('font-size="15"', 'font-size="18"').replace('font-size="12.5"', 'font-size="15"')
-    cap = cap.replace('y="1444"', 'y="%d"' % (qr_top + 32)).replace('y="1470"', 'y="%d"' % (qr_top + 60)) \
-             .replace('y="1490"', 'y="%d"' % (qr_top + 84))
+    cap = cap.replace('y="1452"', 'y="%d"' % (qr_top + 32)).replace('y="1478"', 'y="%d"' % (qr_top + 60)) \
+             .replace('y="1498"', 'y="%d"' % (qr_top + 84))
     parts.append(cap)
     parts.append(qr)
     parts.append('</svg>\n')

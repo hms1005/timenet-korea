@@ -31,3 +31,9 @@ kisti_png.zip
 
 # 쓰지 않게 된 구판 포스터 보관용 (로컬만)
 old/
+
+# 등록자 명단·발송 기록 (개인정보, 공개 저장소이므로 제외)
+*Registration*.csv
+tools/.sent_confirmation.log
+tools/mail*
+tools/send_confirmation.py

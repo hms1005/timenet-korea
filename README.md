@@ -241,6 +241,52 @@ gh api -X POST repos/hms1005/timenet-korea/pages/builds   # 재빌드 요청
 gh api repos/hms1005/timenet-korea/pages/builds/latest -q '.status'   # 상태 확인
 ```
 
+## 등록확인 메일 발송
+
+사전등록자에게 등록확인 메일을 1인 1통으로 보내는 스크립트입니다. 구글폼 응답을 받은 CSV
+(`(TIme-Net Korea)Registration_final_corrected.csv`)를 읽어 국·영문 병기 메일을 만들고
+SMTP 로 보냅니다. 등록자 상당수가 한국인이지만 이름을 로마자로 적어 냈기 때문에, 이름으로
+언어를 가르지 않고 **한 통에 국문·영문을 함께** 담습니다.
+
+| 파일 | 내용 |
+|---|---|
+| `tools/send_confirmation.py` | 명단 정리 + 발송 (기본은 미리보기) |
+| `tools/mail_confirmation.html` | 메일 본문 — HTML 판 (국문 → 영문) |
+| `tools/mail_confirmation.txt` | 메일 본문 — 텍스트 판 (HTML 을 막아 둔 메일함용) |
+| `tools/.sent_confirmation.log` | 발송 기록 (로컬만, 저장소에서 제외) |
+
+```bash
+# 1) 명단 점검 + 미리보기 — 아무것도 보내지 않습니다
+python3 tools/send_confirmation.py --preview-html /tmp/preview.html
+
+# 2) 본인 주소로 시험 발송
+export SMTP_USER="보내는주소@gmail.com"
+export SMTP_PASS="앱비밀번호16자"      # Gmail 2단계 인증 후 발급
+python3 tools/send_confirmation.py --send --only 본인주소@kriss.re.kr
+
+# 3) 전체 발송 (한 통마다 2초 간격, 프로그램 PDF 첨부)
+python3 tools/send_confirmation.py --send --contact hms1005@kriss.re.kr
+```
+
+스크립트가 명단에 대해 해 주는 일:
+
+- 주소에 섞인 공백을 없앱니다 (`Neil.pitman@ Adtran.com` → `neil.pitman@adtran.com`).
+- 같은 주소의 중복 등록은 한 통으로 합치고, 참여 일정은 넓은 쪽으로 둡니다.
+- 주소가 비어 있거나 형식이 깨진 행은 보내지 않고 줄 번호와 함께 알려 줍니다.
+- `세지(Seji)` / `Chul-Soo (철수)` 처럼 두 표기를 함께 적은 이름은 한글·로마자로 나눠
+  국문 호칭(`강세지 님`)과 영문 호칭(`Seji Kang`)을 각각 만듭니다.
+- 참여 일정(오전/오후/전일)을 사람마다 메일에 적어 줍니다.
+
+행사 일시·장소·문의 주소는 `tools/send_confirmation.py` 상단의 `EVENT` 사전에 모아 두었습니다.
+프로그램이 바뀌면 이 값과 포스터를 함께 확인하세요.
+
+발송은 중간에 끊겨도 됩니다. 성공한 주소는 `tools/.sent_confirmation.log` 에 남고 다시 실행하면
+건너뜁니다(`--resend` 로 무시). 같은 사람에게 두 번 가는 일을 막아 주므로 이 파일은 지우지 마세요.
+
+> 등록자 CSV 와 발송 기록에는 100여 명의 이름·소속·메일 주소가 들어 있습니다. 이 저장소는
+> 공개 저장소이므로 `.gitignore` 에 `*Registration*.csv` 를 넣어 두었습니다. 파일명을 바꿀 때는
+> 이 패턴에 걸리는지 확인하세요.
+
 ## 참고
 
 - 프로그램의 연사와 일정은 확정 전 상태(`TBD`)인 항목이 있으며, 사정에 따라 변경될 수 있습니다.

@@ -10,6 +10,8 @@
        국내외 광기반 시간·주파수 서비스  -> 국내외 광기반 시각주파수 서비스
        전력계통 네트워크 기반 시각동기    -> 전력계통 시각동기
   3. 02 의 일시 '2023' -> '2026'
+  4. 윤정현 직함 '연구위원' -> '센터장' (같은 포스터의 '조부승 센터장' 글자를 떼어 와
+     붙이고, 소속 '(국가안보전략연구원)' 을 줄어든 폭만큼 왼쪽으로 당긴다)
 
 래스터라서 글자를 색으로 떼어낸다: 영역 안의 글자(흰색·주황·하늘색)를 soft alpha 로
 키잉하고, 글자 자리는 확산 인페인팅으로 메워 깨끗한 배경을 만든 뒤, 글자 레이어를
@@ -121,6 +123,19 @@ SKY = (40, 167, 225)
 WHITE = (254, 254, 254)
 
 
+def retitle(img, box, src_box, name_end, old, new, aff, bottom):
+    """연사 줄의 직함을 바꾼다. box: 연사 줄 영역, src_box: '센터장' 이 있는 다른 연사 줄 영역,
+    name_end: 이름 오른쪽 끝(원본 좌표), old/new: 옛·새 직함 잉크의 (x_left, x_right),
+    aff: 소속 글자 왼쪽, bottom: 새 직함 잉크를 맞출 아래선. 새 직함은 src_box 에서 떼어 온다."""
+    reg = Region(img, *box)
+    src = Region(img, *src_box)
+    reg.paste(reg.cut(box[1], box[3], x_right=name_end), box[1])                 # 이름
+    reg.paste_ink(src.cut(src_box[1], src_box[3], x_left=new[0] - 4, x_right=new[1] + 4), old[0], bottom)
+    reg.paste(reg.cut(box[1], box[3], x_left=aff - 6), box[1],
+              dx=-((old[1] - old[0]) - (new[1] - new[0])))                        # 소속
+    reg.write(img)
+
+
 def poster_01():
     src = os.path.join(ROOT, 'MOD_poster_01.jpg')
     img = np.array(Image.open(src).convert('RGB'))
@@ -147,6 +162,10 @@ def poster_01():
         col2.paste(col2.cut(s - M, s + H + M), d - M)
     col2.paste(cecilia, tops[4] - M, dx=1028 - 1788)                 # 글자 왼쪽 맞춤
     col2.write(img)
+
+    # 1단 3번째 연사: 윤정현 연구위원 -> 센터장 ('센터장' 은 2번째 연사 조부승 줄에서)
+    retitle(img, (250, 2500, 920, 2565), (250, 2298, 920, 2362), 372,
+            old=(381, 516), new=(381, 484), aff=528, bottom=2549)
     save(img, src, os.path.join(ROOT, 'MOD_poster_01_rev1.jpg'))
 
 
@@ -192,6 +211,10 @@ def poster_02():
     infra.paste(cecilia, 2396 - M)
     sol.write(img)
     infra.write(img)
+
+    # 총론 3번째 연사: 윤정현 연구위원 -> 센터장 ('센터장' 은 2번째 연사 조부승 줄에서)
+    retitle(img, (1712, 1770, 2300, 1838), (1712, 1692, 2300, 1755), 1813,
+            old=(1818, 1934), new=(1834, 1922), aff=1940, bottom=1819)
     save(img, src, os.path.join(ROOT, 'MOD_poster_02_rev1.jpg'))
 
 
